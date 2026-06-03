@@ -1,0 +1,19 @@
+{
+  "name": "recruitment-app",
+  "version": "1.0.0",
+  "description": "房懂懂招聘系统 - 飞书 Bitable 代理服务器",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [],
+  "author": "房懂懂",
+  "license": "ISC",
+  "dependencies": {
+    "vercel": "^54.7.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
