@@ -1,0 +1,3947 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- v2026.06.02-1918 new Base KmWSbMrP1amre2s4Hbhch0EsnCg, full CRUD -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#E50012">
+<title>房懂懂招聘系统</title>
+<style>
+:root {
+  --brand-red: #E50012;
+  --brand-red-dark: #8B0E22;
+  --brand-red-light: #FFF0F1;
+  --brand-gold: #CAAB62;
+  --brand-gold-light: #FBF6ED;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F7F8FA;
+  --bg-sidebar: #1A1A2E;
+  --bg-sidebar-hover: #252540;
+  --bg-sidebar-active: #E50012;
+  --text-primary: #1A1A2E;
+  --text-secondary: #6B7280;
+  --text-light: #9CA3AF;
+  --text-white: #FFFFFF;
+  --border: #E5E7EB;
+  --border-light: #F3F4F6;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --transition: 0.2s ease;
+  --sidebar-width: 240px;
+  --header-height: clamp(48px, 6vh, 64px);
+  --content-padding: clamp(12px, 2vw, 32px);
+  --font-base: clamp(12px, 1vw, 14px);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", -apple-system, sans-serif;
+  font-size: var(--font-base);
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* ============== SIDEBAR ============== */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--bg-sidebar);
+  color: var(--text-white);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-brand .logo-icon {
+  width: 40px; height: 40px;
+  background: var(--brand-red);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+}
+
+.sidebar-brand-text h2 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.sidebar-brand-text span {
+  font-size: 11px;
+  color: var(--brand-gold);
+  font-weight: 400;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 14px;
+  color: rgba(255,255,255,0.65);
+  text-decoration: none;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  position: relative;
+}
+
+.nav-item:hover { background: var(--bg-sidebar-hover); color: white; }
+.nav-item.active { background: var(--bg-sidebar-active); color: white; font-weight: 600; }
+
+.nav-item .nav-icon { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; }
+.nav-item .nav-badge {
+  margin-left: auto;
+  background: var(--brand-gold);
+  color: var(--bg-sidebar);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.nav-item .badge-red-label {
+  margin-left: auto;
+  background: var(--brand-red);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sidebar-footer .dot { width: 6px; height: 6px; background: #22C55E; border-radius: 50%; }
+
+#app-shell {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ============== MAIN CONTENT ============== */
+.main-content {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  width: 0; /* force flex to allocate remaining space, not content-based */
+  min-width: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.page-header {
+  height: var(--header-height);
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--content-padding);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  gap: 12px;
+}
+
+.page-header h1 {
+  font-size: clamp(16px, 1.4vw, 20px);
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 0.8vw, 12px);
+  flex-shrink: 0;
+}
+
+.page-content {
+  flex: 1;
+  width: 100%;
+  padding: var(--content-padding);
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Force module wrappers to fill .page-content height */
+.page-content > .fade-in {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.module-fill { flex: 1; min-height: 0; }
+
+/* ============== BUTTONS ============== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: clamp(6px, 0.5vw, 8px) clamp(12px, 1.2vw, 18px);
+  border-radius: var(--radius-sm);
+  font-size: clamp(11px, 0.82vw, 13px);
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition);
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--brand-red);
+  color: white;
+}
+.btn-primary:hover { background: var(--brand-red-dark); }
+
+.btn-outline {
+  background: white;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+.btn-outline:hover { border-color: var(--brand-red); color: var(--brand-red); }
+
+.btn-gold {
+  background: var(--brand-gold);
+  color: white;
+}
+.btn-gold:hover { background: #B8964E; }
+
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-lg { padding: 12px 28px; font-size: 15px; }
+
+.btn-icon {
+  width: 36px; height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: white;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 16px;
+}
+.btn-icon:hover { border-color: var(--brand-red); color: var(--brand-red); }
+
+/* ============== METRIC CARDS ============== */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(clamp(140px, 16vw, 220px), 1fr));
+  gap: clamp(10px, 1.2vw, 20px);
+  margin-bottom: clamp(14px, 1.8vh, 28px);
+}
+
+.metric-card {
+  background: white;
+  border-radius: var(--radius-md);
+  padding: clamp(12px, 1.4vw, 20px) clamp(14px, 1.6vw, 24px);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  transition: all var(--transition);
+}
+
+.metric-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--brand-red-light);
+}
+
+.metric-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: clamp(6px, 0.8vh, 12px);
+}
+
+.metric-card-label {
+  font-size: clamp(11px, 0.9vw, 13px);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.metric-card-icon {
+  width: clamp(28px, 2.4vw, 36px); height: clamp(28px, 2.4vw, 36px);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(14px, 1.2vw, 18px);
+}
+
+.metric-card-icon.red { background: var(--brand-red-light); color: var(--brand-red); }
+.metric-card-icon.gold { background: var(--brand-gold-light); color: var(--brand-gold); }
+.metric-card-icon.blue { background: #EEF2FF; color: #4F46E5; }
+.metric-card-icon.green { background: #ECFDF5; color: #059669; }
+
+.metric-card-value {
+  font-size: clamp(20px, 1.9vw, 28px);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.metric-card-change {
+  font-size: clamp(10px, 0.8vw, 12px);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.metric-card-change.up { color: #059669; }
+.metric-card-change.down { color: var(--brand-red); }
+
+/* ============== CARDS & PANELS ============== */
+.card {
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+  width: 100%;
+  max-width: none;
+}
+
+.card-header {
+  padding: clamp(12px, 1.1vw, 18px) clamp(14px, 1.5vw, 24px);
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.card-header h3 {
+  font-size: clamp(13px, 1vw, 15px);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.card-body { padding: clamp(14px, 1.5vw, 24px); }
+.card-body.no-padding { padding: 0; }
+
+/* ============== TABLE ============== */
+.table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(11px, 0.82vw, 13px);
+}
+
+table th {
+  background: var(--bg-secondary);
+  padding: clamp(8px, 0.75vw, 12px) clamp(10px, 1vw, 16px);
+  text-align: left;
+  font-weight: 600;
+  font-size: clamp(10px, 0.75vw, 12px);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  border-bottom: 2px solid var(--border);
+}
+
+table td {
+  padding: clamp(8px, 0.85vw, 14px) clamp(10px, 1vw, 16px);
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+table tr:hover td { background: var(--bg-secondary); }
+
+/* ============== STATUS BADGES ============== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-red { background: var(--brand-red-light); color: var(--brand-red); }
+.badge-gold { background: var(--brand-gold-light); color: #9B7B2C; }
+.badge-blue { background: #EEF2FF; color: #4F46E5; }
+.badge-green { background: #ECFDF5; color: #059669; }
+.badge-gray { background: #F3F4F6; color: #6B7280; }
+.badge-orange { background: #FFF7ED; color: #EA580C; }
+
+/* ============== TABS ============== */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+  gap: 0;
+}
+
+.tab-item {
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition);
+  margin-bottom: -1px;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: inherit;
+}
+
+.tab-item:hover { color: var(--text-primary); }
+.tab-item.active {
+  color: var(--brand-red);
+  border-bottom-color: var(--brand-red);
+  font-weight: 600;
+}
+
+/* ============== FORMS ============== */
+.form-group { margin-bottom: 16px; }
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text-primary);
+  transition: border-color var(--transition);
+  background: white;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--brand-red);
+  box-shadow: 0 0 0 3px var(--brand-red-light);
+}
+
+.form-textarea { min-height: 80px; resize: vertical; }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ============== SEARCH BAR ============== */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.search-input-wrap {
+  flex: 1;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 14px 10px 40px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: white;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--brand-red);
+  box-shadow: 0 0 0 3px var(--brand-red-light);
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-light);
+  font-size: 16px;
+}
+
+.filter-select {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: white;
+  min-width: 140px;
+}
+
+/* ============== MODAL ============== */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.4);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header h3 { font-size: 17px; font-weight: 600; }
+
+.modal-close {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.modal-close:hover { background: var(--brand-red-light); color: var(--brand-red); }
+
+.modal-body { padding: 24px; }
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* ============== PIPELINE ============== */
+.pipeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(110px, 10vw, 180px), 1fr));
+  gap: clamp(6px, 0.8vw, 12px);
+}
+
+.pipeline-column {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: clamp(8px, 0.9vw, 14px);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.pipeline-column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  gap: 4px;
+}
+
+.pipeline-column-name {
+  font-size: clamp(10px, 0.85vw, 13px);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.pipeline-column-count {
+  font-size: clamp(10px, 0.78vw, 12px);
+  background: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pipeline-card {
+  background: white;
+  border-radius: var(--radius-sm);
+  padding: clamp(6px, 0.7vw, 12px);
+  margin-bottom: 6px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  border: 1px solid transparent;
+}
+
+.pipeline-card:hover { border-color: var(--brand-red-light); }
+
+.pipeline-card-name {
+  font-size: clamp(11px, 0.85vw, 13px);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.pipeline-card-meta {
+  font-size: clamp(9px, 0.7vw, 11px);
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ============== GRID LAYOUT ============== */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(10px, 1.2vw, 20px);
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(10px, 1.2vw, 20px);
+}
+
+/* ============== EMPTY STATE ============== */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-light);
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+
+.empty-state h3 {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+/* ============== CANVAS BOARD ============== */
+.board-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(130px, 11vw, 200px), 1fr));
+  gap: clamp(8px, 0.8vw, 14px);
+  min-height: 0;
+}
+
+.board-column {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: clamp(8px, 0.8vw, 14px);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.board-column-title {
+  font-size: clamp(10px, 0.78vw, 13px);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.board-card {
+  background: white;
+  border-radius: var(--radius-sm);
+  padding: clamp(6px, 0.65vw, 12px);
+  margin-bottom: clamp(4px, 0.5vw, 8px);
+  box-shadow: var(--shadow-sm);
+  cursor: grab;
+  border-left: 3px solid var(--brand-red);
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+
+.board-card:hover { box-shadow: var(--shadow-md); }
+
+.board-card-title { font-size: clamp(11px, 0.78vw, 13px); font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.board-card-info { font-size: clamp(9px, 0.65vw, 11px); color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ============== TIMELINE ============== */
+.timeline {
+  position: relative;
+  padding-left: 24px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -21px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--brand-gold);
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px var(--brand-gold);
+}
+
+.timeline-item.completed::before { background: #22C55E; box-shadow: 0 0 0 2px #22C55E; }
+.timeline-item.active::before { background: var(--brand-red); box-shadow: 0 0 0 2px var(--brand-red); }
+
+.timeline-date { font-size: 11px; color: var(--text-light); margin-bottom: 2px; }
+.timeline-content { font-size: 13px; color: var(--text-primary); font-weight: 500; }
+
+/* ============== CHART CONTAINER ============== */
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: clamp(180px, 20vh, 280px);
+}
+
+.chart-container.large { height: clamp(220px, 26vh, 360px); }
+
+/* ============== SCROLLBAR ============== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+
+/* ============== ANIMATIONS ============== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in { animation: fadeIn 0.3s ease; }
+
+/* ============== RESPONSIVE BREAKPOINTS ============== */
+
+/* Tablet landscape / small desktop (1024-1400px) */
+@media (max-width: 1400px) {
+  .grid-2 { grid-template-columns: 1fr; }
+  .board-view { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+}
+
+/* Tablet portrait (768-1024px) */
+@media (max-width: 1024px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .metrics-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .board-view { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .page-content { padding: clamp(10px, 2vw, 16px); }
+}
+
+/* Phone landscape / small tablet (640-768px) */
+@media (max-width: 768px) {
+  :root { --sidebar-width: 56px; --header-height: 48px; }
+  .sidebar { width: 56px !important; }
+  .sidebar-brand { padding: 16px 8px; justify-content: center; }
+  .sidebar-brand .logo-icon { width: 32px; height: 32px; font-size: 16px; }
+  .sidebar-brand-text, .sidebar-nav .nav-item span:not(.nav-icon), .sidebar-footer span,
+  .nav-item .nav-badge, .nav-item .badge-red-label { display: none; }
+  .nav-item { justify-content: center; padding: 10px 0; }
+  .nav-item .nav-icon { margin: 0; font-size: 20px; }
+  .main-content { margin-left: 56px !important; }
+  .page-header { padding: 0 clamp(8px, 2vw, 16px); }
+  .page-header h1 { font-size: clamp(14px, 3vw, 16px); }
+  .page-content { padding: clamp(8px, 2vw, 12px); }
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 12px; }
+  .board-view { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 6px; }
+  .board-column { padding: 6px; }
+  .board-column-title { font-size: 10px; margin-bottom: 4px; padding-bottom: 4px; }
+  .board-card { padding: 5px 6px; margin-bottom: 3px; }
+  .board-card-title { font-size: 10px; }
+  .board-card-info { font-size: 9px; }
+  .pipeline { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 6px; }
+  .pipeline-column { padding: 6px; }
+  .pipeline-column-name { font-size: 10px; }
+  .pipeline-card { padding: 5px 6px; }
+  .pipeline-card-name { font-size: 10px; }
+  .pipeline-card-meta { font-size: 9px; }
+  .card-header { padding: 12px 14px; }
+  .card-body { padding: 12px; }
+  .form-row { grid-template-columns: 1fr; }
+  .search-bar { flex-direction: column; gap: 8px; }
+  .search-input-wrap { width: 100%; }
+  .filter-select { width: 100%; min-width: 0; }
+  .modal { width: 95%; max-height: 90vh; }
+  .modal-header { padding: 14px 16px; }
+  .modal-body { padding: 16px; }
+  #eval-page .rating-wrap { grid-template-columns: 1fr 1fr; }
+  #eval-page { max-width: 100%; }
+  .chart-container { height: 200px; }
+  table { font-size: 11px; }
+  table th, table td { padding: 6px 8px; }
+}
+
+/* Phone portrait (320-480px) */
+@media (max-width: 480px) {
+  :root { --sidebar-width: 48px; --header-height: 44px; }
+  .sidebar { width: 48px !important; }
+  .main-content { margin-left: 48px !important; }
+  .page-header h1 { font-size: 14px; }
+  .page-content { padding: 6px; }
+  .metrics-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .metric-card { padding: 10px 12px; }
+  .metric-card-value { font-size: 18px; }
+  .board-view { grid-template-columns: repeat(2, 1fr); gap: 4px; }
+  .board-column { padding: 5px; }
+  .board-column-title { font-size: 9px; }
+  .board-card { padding: 4px 5px; margin-bottom: 2px; border-left-width: 2px; }
+  .board-card-title { font-size: 9px; }
+  .board-card-info { font-size: 8px; }
+  .pipeline { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 4px; }
+  .pipeline-column { padding: 4px; }
+  .pipeline-card { padding: 4px 5px; margin-bottom: 3px; }
+  table { font-size: 10px; }
+  .btn { padding: 5px 10px; font-size: 10px; }
+  .btn-sm { padding: 4px 8px; font-size: 9px; }
+  #eval-page .rating-dim-name { font-size: 10px; }
+  #eval-page .rating-stars .estar { width: 30px; height: 30px; font-size: 14px; }
+  #eval-page { max-width: 100%; }
+  body.eval-mode { padding: 8px; }
+}
+
+/* Eval-page small screen */
+@media (max-width: 640px) {
+  #eval-page .rating-wrap { grid-template-columns: 1fr; }
+  #eval-page .eval-card-header { padding: 16px 20px; }
+  #eval-page .eval-card-body { padding: 20px; }
+}
+
+/* ============== EVALUATE PAGE ============== */
+body.eval-mode {
+  height: auto !important;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: auto !important;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(12px, 2vw, 20px);
+  background: var(--bg-secondary);
+  font-size: inherit;
+}
+
+#eval-page { display: none; width: 100%; max-width: clamp(340px, 90vw, 560px); margin: 0 auto; }
+
+#eval-page .eval-header { text-align: center; margin-bottom: clamp(16px, 3vh, 28px); }
+#eval-page .eval-logo {
+  width: clamp(44px, 8vw, 56px); height: clamp(44px, 8vw, 56px);
+  background: var(--brand-red);
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  font-size: clamp(20px, 3.5vw, 24px); font-weight: 700; color: white;
+  margin-bottom: clamp(10px, 1.5vh, 16px);
+}
+#eval-page .eval-header h1 { font-size: clamp(17px, 3vw, 22px); font-weight: 700; margin-bottom: 4px; color: var(--text-primary); }
+#eval-page .eval-header p { font-size: clamp(11px, 1.6vw, 13px); color: var(--text-secondary); }
+
+#eval-page .eval-card {
+  background: white; border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md); border: 1px solid var(--border-light);
+  overflow: hidden; margin-bottom: clamp(12px, 2vh, 20px);
+}
+#eval-page .eval-card-header {
+  padding: clamp(14px, 2vh, 20px) clamp(16px, 3vw, 28px);
+  border-bottom: 1px solid var(--border-light);
+  background: var(--brand-red-light);
+}
+#eval-page .eval-card-header h2 { font-size: clamp(14px, 2.2vw, 16px); font-weight: 600; color: var(--text-primary); }
+#eval-page .eval-card-header .meta { display: flex; gap: clamp(8px, 1.5vw, 16px); margin-top: clamp(4px, 0.8vh, 8px); font-size: clamp(11px, 1.6vw, 13px); color: var(--text-secondary); flex-wrap: wrap; }
+#eval-page .eval-card-body { padding: clamp(16px, 3vw, 28px); }
+
+#eval-page .candidate-info {
+  background: var(--bg-secondary); border-radius: var(--radius-md);
+  padding: clamp(12px, 2vw, 16px) clamp(14px, 2.5vw, 20px); margin-bottom: clamp(16px, 3vh, 24px);
+  display: flex; gap: clamp(10px, 2vw, 20px); align-items: center;
+}
+#eval-page .candidate-avatar {
+  width: clamp(40px, 8vw, 52px); height: clamp(40px, 8vw, 52px); background: var(--brand-gold);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: clamp(18px, 3vw, 22px); font-weight: 700; color: white; flex-shrink: 0;
+}
+#eval-page .candidate-detail h3 { font-size: clamp(14px, 2.2vw, 16px); font-weight: 700; }
+#eval-page .candidate-detail .info-row { font-size: clamp(10px, 1.5vw, 12px); color: var(--text-secondary); margin-top: 2px; }
+
+#eval-page .form-section { margin-bottom: clamp(14px, 2.5vh, 24px); }
+#eval-page .form-section-title {
+  font-size: clamp(12px, 1.8vw, 14px); font-weight: 700; color: var(--text-primary);
+  margin-bottom: clamp(8px, 1.2vh, 14px); padding-bottom: clamp(4px, 0.6vh, 8px);
+  border-bottom: 2px solid var(--brand-red); display: inline-block;
+}
+
+#eval-page .rating-wrap { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(8px, 1.2vw, 16px); }
+#eval-page .rating-dim {
+  background: var(--bg-secondary); border-radius: var(--radius-md);
+  padding: clamp(10px, 1.5vw, 16px); text-align: center;
+}
+#eval-page .rating-dim-name { font-size: clamp(10px, 1.4vw, 12px); color: var(--text-secondary); margin-bottom: clamp(4px, 0.6vh, 8px); font-weight: 600; }
+#eval-page .rating-stars { display: flex; justify-content: center; gap: clamp(3px, 0.6vw, 6px); margin-bottom: clamp(2px, 0.4vh, 6px); }
+#eval-page .rating-stars .estar {
+  width: clamp(28px, 5.5vw, 38px); height: clamp(28px, 5.5vw, 38px); border-radius: 50%;
+  border: 2px solid var(--border); cursor: pointer;
+  font-size: clamp(14px, 2.5vw, 18px); display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s ease; background: white; color: var(--text-light);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none; -webkit-user-select: none;
+}
+#eval-page .rating-stars .estar:hover { border-color: var(--brand-gold); color: var(--brand-gold); }
+#eval-page .rating-stars .estar:active { transform: scale(0.9); }
+#eval-page .rating-stars .estar.active { border-color: var(--brand-gold); background: var(--brand-gold); color: white; font-weight: 700; }
+#eval-page .rating-score { font-size: clamp(9px, 1.3vw, 11px); color: var(--text-light); }
+#eval-page .rating-score strong { color: var(--brand-red); font-size: clamp(13px, 2.2vw, 16px); }
+
+#eval-page .btn-eval-primary {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; padding: clamp(12px, 1.5vh, 16px); border-radius: var(--radius-sm);
+  font-size: clamp(14px, 2.5vw, 16px); font-weight: 600; cursor: pointer; border: none;
+  background: var(--brand-red); color: white;
+  font-family: inherit; transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+#eval-page .btn-eval-primary:hover { background: var(--brand-red-dark); }
+#eval-page .btn-eval-primary:active { transform: scale(0.98); }
+
+#eval-page .success-block { text-align: center; padding: clamp(20px, 4vh, 40px) clamp(10px, 2vw, 20px); }
+#eval-page .success-icon {
+  width: clamp(56px, 12vw, 72px); height: clamp(56px, 12vw, 72px); background: #ECFDF5;
+  border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  font-size: clamp(28px, 5vw, 36px); margin-bottom: clamp(12px, 2vh, 20px);
+}
+#eval-page .success-block h2 { font-size: clamp(16px, 3vw, 20px); color: #059669; margin-bottom: 6px; }
+#eval-page .result-box { background: var(--bg-secondary); border-radius: var(--radius-md); padding: clamp(12px, 2vw, 20px); margin-top: clamp(12px, 2vh, 20px); text-align: left; }
+#eval-page .result-row { display: flex; justify-content: space-between; padding: clamp(4px, 0.6vh, 8px) 0; border-bottom: 1px solid var(--border-light); font-size: clamp(11px, 1.6vw, 13px); }
+#eval-page .result-row:last-child { border-bottom: none; }
+#eval-page .result-row .rlabel { color: var(--text-secondary); }
+#eval-page .result-row .rvalue { font-weight: 600; }
+#eval-page .score-stars { color: var(--brand-gold); font-size: clamp(13px, 2.2vw, 16px); }
+
+@media (max-width: 640px) {
+  #eval-page .rating-wrap { grid-template-columns: 1fr; }
+  #eval-page .eval-card-header { padding: 16px 20px; }
+  #eval-page .eval-card-body { padding: 20px; }
+}
+
+/* ============== AI SCREENING ============== */
+.ai-section { margin-top: clamp(12px, 1.5vh, 20px); }
+
+/* --- Result Top Card --- */
+.ai-result-top { display: none; margin-bottom: clamp(12px, 1.5vh, 20px); }
+.ai-result-top .card-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.ai-result-top .card-header h3 { display: flex; align-items: center; gap: 8px; }
+.ai-result-row {
+  display: grid;
+  grid-template-columns: clamp(200px, 22vw, 280px) 1fr;
+  gap: clamp(16px, 2.5vw, 32px);
+  align-items: start;
+}
+.ai-radar-wrap { display: flex; justify-content: center; align-items: center; }
+.ai-radar-wrap canvas { width: 100%; max-width: 280px; height: auto; }
+
+.ai-scores-list { display: flex; flex-direction: column; gap: clamp(10px, 1.2vh, 14px); }
+.ai-score-row { display: flex; align-items: center; gap: 10px; }
+.ai-score-row .score-label-text { width: clamp(60px, 6vw, 80px); font-size: clamp(11px, 0.8vw, 13px); color: var(--text-secondary); text-align: right; flex-shrink: 0; }
+.ai-score-row .score-bar-wrap { flex: 1; height: clamp(7px, 0.6vw, 10px); background: #F0F0F0; border-radius: 5px; overflow: hidden; }
+.ai-score-row .score-bar-fill { height: 100%; border-radius: 5px; transition: width 0.6s ease; }
+.ai-score-row .score-pct { width: 42px; font-size: clamp(12px, 0.9vw, 14px); font-weight: 700; text-align: right; flex-shrink: 0; }
+
+/* Star Rating */
+.ai-stars { display: inline-flex; gap: 2px; font-size: clamp(18px, 1.6vw, 24px); }
+.ai-stars .star-on { color: #F59E0B; }
+.ai-stars .star-off { color: #E5E7EB; }
+
+/* Strengths & Concerns */
+.ai-sw-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(10px, 1.5vw, 20px);
+  margin-top: clamp(12px, 1.5vh, 20px);
+}
+.ai-strengths, .ai-concerns {
+  padding: clamp(10px, 1.2vw, 16px);
+  border-radius: var(--radius-sm);
+  font-size: clamp(11px, 0.82vw, 13px);
+  line-height: 1.7;
+}
+.ai-strengths {
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  border-left: 4px solid #059669;
+}
+.ai-concerns {
+  background: var(--brand-red-light, #FEF2F2);
+  border: 1px solid #FECACA;
+  border-left: 4px solid var(--brand-red);
+}
+.ai-strengths h4, .ai-concerns h4 { font-size: clamp(12px, 0.9vw, 14px); margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+.ai-strengths ul, .ai-concerns ul { padding-left: 18px; margin: 0; }
+.ai-strengths ul li, .ai-concerns ul li { margin-bottom: 3px; }
+
+.ai-recommendation-new {
+  background: linear-gradient(135deg, #FFF8F5, #fff);
+  border: 1px solid var(--brand-gold);
+  border-left: 4px solid var(--brand-gold);
+  padding: clamp(10px, 1.2vw, 16px);
+  border-radius: var(--radius-sm);
+  font-size: clamp(11px, 0.85vw, 14px);
+  line-height: 1.8;
+  margin-top: clamp(12px, 1.5vh, 20px);
+}
+.ai-recommendation-new strong { color: var(--brand-red); }
+
+/* --- Input Form (below results) --- */
+.ai-input-card { }
+.ai-upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: clamp(16px, 3vh, 32px) clamp(12px, 2vw, 20px);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: var(--bg-secondary);
+  position: relative;
+}
+.ai-upload-zone:hover, .ai-upload-zone.drag-active {
+  border-color: var(--brand-red);
+  background: var(--brand-red-light);
+}
+.ai-upload-zone .upload-icon { font-size: clamp(24px, 3vw, 36px); margin-bottom: clamp(6px, 1vh, 10px); }
+.ai-upload-zone .upload-text { font-size: clamp(12px, 1vw, 14px); font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.ai-upload-zone .upload-hint { font-size: clamp(10px, 0.8vw, 12px); color: var(--text-light); }
+.ai-upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.ai-resume-preview {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: clamp(8px, 1.2vw, 14px); margin-top: clamp(8px, 1vh, 12px);
+  max-height: clamp(100px, 15vh, 160px); overflow-y: auto; font-size: clamp(10px, 0.8vw, 12px); line-height: 1.6;
+  color: var(--text-secondary); white-space: pre-wrap; display: none;
+}
+.ai-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(8px, 1.2vw, 16px); margin-top: clamp(8px, 1.2vh, 16px); }
+.ai-actions { margin-top: clamp(8px, 1.2vh, 16px); display: flex; gap: clamp(6px, 0.8vw, 10px); align-items: center; flex-wrap: wrap; }
+
+@media (max-width: 768px) {
+  .ai-result-row { grid-template-columns: 1fr; }
+  .ai-sw-grid { grid-template-columns: 1fr; }
+  .ai-form-row { grid-template-columns: 1fr; }
+  .ai-radar-wrap canvas { max-width: 220px; }
+}
+
+/* ============== RESUME UPLOAD ============== */
+.resume-upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: 28px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  background: var(--bg-secondary);
+  margin-bottom: 20px;
+  position: relative;
+}
+.resume-upload-zone:hover,
+.resume-upload-zone.drag-over {
+  border-color: var(--brand-red);
+  background: var(--brand-red-light);
+}
+.resume-upload-zone .upload-icon {
+  font-size: 36px;
+  margin-bottom: 8px;
+  color: var(--text-light);
+  transition: color var(--transition);
+}
+.resume-upload-zone:hover .upload-icon,
+.resume-upload-zone.drag-over .upload-icon {
+  color: var(--brand-red);
+}
+.resume-upload-zone .upload-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.resume-upload-zone .upload-hint {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+.resume-upload-status {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--brand-gold-light);
+  border-radius: var(--radius-sm);
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+.resume-upload-status.show { display: flex; }
+.resume-upload-status.success { background: #ECFDF5; color: #059669; }
+.resume-upload-status.error { background: #FEF2F2; color: #DC2626; }
+.resume-upload-status .status-spinner {
+  width: 18px; height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--brand-gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.resume-parsed-fields {
+  display: none;
+  background: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+.resume-parsed-fields.show { display: block; }
+.resume-parsed-fields .parsed-title {
+  font-weight: 600;
+  color: #059669;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.resume-parsed-fields .parsed-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  color: var(--text-secondary);
+}
+.resume-parsed-fields .parsed-item { display: flex; align-items: center; gap: 4px; }
+.resume-parsed-fields .parsed-item strong { color: var(--text-primary); }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+</head>
+<body>
+
+<!-- EVALUATE PAGE (hidden by default) -->
+<div id="eval-page">
+  <div class="eval-header">
+    <div class="eval-logo">懂</div>
+    <h1>面试评价表</h1>
+    <p>房懂懂招聘系统 · 面试评价专用</p>
+  </div>
+
+  <div class="eval-card" id="evalFormCard">
+    <div class="eval-card-header">
+      <h2>候选人信息</h2>
+      <div class="meta">
+        <span>👤 <strong id="edCandName">—</strong></span>
+        <span>💼 <strong id="edCandPos">—</strong></span>
+        <span>📋 <strong id="edCandRound">—</strong></span>
+        <span id="edResumeBtn" style="display:none;"><a href="#" id="edResumeLink" style="color:var(--brand-gold);font-weight:600;text-decoration:none;font-size:12px;" onclick="event.preventDefault();var c=STATE.candidates.find(function(x){return x['姓名']===document.getElementById('edCandName').textContent;});if(c)viewResume(c.id);">📄 查看简历</a></span>
+      </div>
+    </div>
+
+    <div class="eval-card-body">
+      <input type="hidden" id="edName">
+      <input type="hidden" id="edPosition">
+      <input type="hidden" id="edRound">
+
+      <div class="form-section">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">面试轮次</label>
+            <select class="form-select" id="edRoundSelect">
+              <option value="初试">初试</option>
+              <option value="复试">复试</option>
+              <option value="三面">三面</option>
+              <option value="终试">终试</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">面试日期</label>
+            <input class="form-input" type="date" id="edDate">
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:8px;">
+          <label class="form-label">面试官姓名</label>
+          <input class="form-input" id="edInterviewer" placeholder="请输入您的姓名">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">四维度评分（1-5分）</div>
+        <div class="rating-wrap">
+          <div class="rating-dim" id="edDimProfessional">
+            <div class="rating-dim-name">专业能力</div>
+            <div class="rating-stars" data-dim="professional"></div>
+            <div class="rating-score">评分: <strong class="score-val">—</strong></div>
+          </div>
+          <div class="rating-dim" id="edDimCommunication">
+            <div class="rating-dim-name">沟通表达</div>
+            <div class="rating-stars" data-dim="communication"></div>
+            <div class="rating-score">评分: <strong class="score-val">—</strong></div>
+          </div>
+          <div class="rating-dim" id="edDimMotivation">
+            <div class="rating-dim-name">求职动机</div>
+            <div class="rating-stars" data-dim="motivation"></div>
+            <div class="rating-score">评分: <strong class="score-val">—</strong></div>
+          </div>
+          <div class="rating-dim" id="edDimPotential">
+            <div class="rating-dim-name">发展潜力</div>
+            <div class="rating-stars" data-dim="potential"></div>
+            <div class="rating-score">评分: <strong class="score-val">—</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-group">
+          <label class="form-label">综合结论</label>
+          <select class="form-select" id="edConclusion">
+            <option value="">请选择</option>
+            <option value="强推">★ 强推 — 非常优秀，强烈推荐录用</option>
+            <option value="推荐">☆ 推荐 — 符合要求，推荐进入下一轮</option>
+            <option value="待定">△ 待定 — 有亮点但有疑虑</option>
+            <option value="不推荐">✕ 不推荐 — 不适合该岗位</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">面试记录 / 评价备注</label>
+          <textarea class="form-textarea" id="edNotes" placeholder="请记录面试中的关键问答、观察到的优缺点、以及其他需要同步给HR的信息..."></textarea>
+        </div>
+      </div>
+
+      <button class="btn-eval-primary" onclick="submitEvalPage()">提交评价 ✓</button>
+    </div>
+  </div>
+
+  <div class="eval-card" id="evalSuccessCard" style="display:none;">
+    <div class="eval-card-body">
+      <div class="success-block">
+        <div class="success-icon">✅</div>
+        <h2>评价提交成功！</h2>
+        <p style="color: var(--text-secondary); margin-top: 8px;">感谢您的评价，HR 已收到反馈</p>
+        <div class="result-box" id="edResultBox"></div>
+        <p style="margin-top: 20px; font-size: 12px; color: var(--text-light);">如需再次评价其他候选人，请使用新的评价链接</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP SHELL -->
+<div id="app-shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo-icon">懂</div>
+    <div class="sidebar-brand-text">
+      <h2>房懂懂</h2>
+      <span>招聘系统 v1.0</span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <button class="nav-item active" data-module="dashboard">
+      <span class="nav-icon">&#128202;</span> 招聘看板
+    </button>
+    <button class="nav-item" data-module="ai-screening">
+      <span class="nav-icon">&#129302;</span> AI简历筛选
+      <span class="nav-badge badge-red-label">Beta</span>
+    </button>
+    <button class="nav-item" data-module="candidates">
+      <span class="nav-icon">&#128101;</span> 候选人管理
+      <span class="nav-badge">0</span>
+    </button>
+    <button class="nav-item" data-module="interviews">
+      <span class="nav-icon">&#128197;</span> 面试管理
+    </button>
+    <button class="nav-item" data-module="offers">
+      <span class="nav-icon">&#128196;</span> Offer管理
+      <span class="nav-badge">0</span>
+    </button>
+    <button class="nav-item" data-module="positions">
+      <span class="nav-icon">&#128203;</span> 岗位管理
+      <span class="nav-badge">0</span>
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    <span class="dot"></span>
+    <span>数据已连接</span>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main-content">
+  <header class="page-header">
+    <h1 id="pageTitle">招聘看板</h1>
+    <div class="page-header-actions">
+      <button class="btn btn-outline btn-sm" onclick="switchModule('settings')">&#9881; 设置</button>
+    </div>
+  </header>
+  <div class="page-content" id="pageContent">
+    <!-- Dynamic content rendered by app.js -->
+  </div>
+</main>
+
+<script>
+/* ============================================
+   房懂懂招聘系统 v1.0 -- 核心应用逻辑
+   ============================================ */
+
+// ============== CONFIGURATION ==============
+var CONFIG = {
+  baseToken: 'KmWSbMrP1amre2s4Hbhch0EsnCg',
+  tables: {
+    positions:  { id: 'tblmviGD2xmRiCkj', name: '岗位管理' },
+    candidates: { id: 'tblMDW55jIQHbWBU', name: '候选人管理' },
+    interviews: { id: 'tblerouDIuweVw3l', name: '面试评价' },
+    offers:     { id: 'tbleMQastNCNgDVq', name: 'Offer管理' }
+  },
+  apiBase: '', /* 使用同源代理 /api/feishu/* → open.feishu.cn */
+  tenantToken: '',  /* token 由服务端管理，前端不再持有 */
+  appId: localStorage.getItem('fd_app_id') || '',
+  appSecret: '' /* secret 仅通过 /api/config 发送给服务端，不存本地 */
+};
+
+// ============== STATE ==============
+var STATE = {
+  currentModule: 'dashboard',
+  candidates: [],
+  positions: [],
+  interviews: [],
+  offers: [],
+  apiReady: false,
+  departments: []
+};
+
+// ============== PIPELINE STAGES ==============
+var PIPELINE_STAGES = [
+  { key: '待筛选', label: '待筛选', color: 'gray' },
+  { key: '初试待约', label: '初试待约', color: 'blue' },
+  { key: '初试已约', label: '初试已约', color: 'gold' },
+  { key: '复试待约', label: '复试待约', color: 'orange' },
+  { key: '复试已约', label: '复试已约', color: 'red' },
+  { key: 'Offer谈判', label: 'Offer谈判', color: 'blue' },
+  { key: '已录用', label: '已录用', color: 'green' },
+  { key: '已入职', label: '已入职', color: 'green' },
+  { key: '已淘汰', label: '已淘汰', color: 'gray' },
+  { key: '已放弃', label: '已放弃', color: 'gray' }
+];
+
+// ============== MOCK DATA ==============
+var MOCK_POSITIONS = [
+  { id:'p1', '岗位名称':'直播主播', '部门':'直播电商业务部', '招聘人数':3, '优先级':'P0-紧急', '招聘渠道':'BOSS直聘,内推', '岗位状态':'招聘中', HR负责人:'郭超', '开放日期':'2026-05-15', JD链接:'', '岗位职责描述':'负责直播带货、粉丝互动' },
+  { id:'p2', '岗位名称':'房产经纪人', '部门':'买房代表业务部', '招聘人数':5, '优先级':'P1-高', '招聘渠道':'BOSS直聘,猎聘', '岗位状态':'招聘中', HR负责人:'郭超', '开放日期':'2026-05-20', JD链接:'', '岗位职责描述':'二手房买卖、客户带看' },
+  { id:'p3', '岗位名称':'AI产品经理', '部门':'AI智能业务部', '招聘人数':2, '优先级':'P1-高', '招聘渠道':'猎头,内推', '岗位状态':'面试中', HR负责人:'郭超', '开放日期':'2026-05-10', JD链接:'', '岗位职责描述':'AI+房产产品设计' },
+  { id:'p4', '岗位名称':'前端工程师', '部门':'产品技术部', '招聘人数':1, '优先级':'P2-中', '招聘渠道':'BOSS直聘,智联招聘', '岗位状态':'招聘中', HR负责人:'郭超', '开放日期':'2026-06-01', JD链接:'', '岗位职责描述':'Web前端开发' },
+  { id:'p5', '岗位名称':'运营专员', '部门':'运营部', '招聘人数':2, '优先级':'P3-低', '招聘渠道':'BOSS直聘', '岗位状态':'待开放', HR负责人:'郭超', '开放日期':'2026-06-15', JD链接:'', '岗位职责描述':'平台运营、活动策划' }
+];
+
+var MOCK_CANDIDATES = [
+  { id:'c1', '姓名':'张明', '联系方式':'138****6789', '应聘岗位':'直播主播', '来源渠道':'BOSS直聘', '当前阶段':'初试已约', '投递日期':'2026-05-28', '面试时间':'2026-06-03 14:00', HR负责人:'郭超', '用人部门负责人':'', '综合评价':'推荐', '备注':'3年电商直播经验' },
+  { id:'c2', '姓名':'李芳', '联系方式':'139****8901', '应聘岗位':'房产经纪人', '来源渠道':'猎聘', '当前阶段':'待筛选', '投递日期':'2026-05-30', '面试时间':'', HR负责人:'郭超', '用人部门负责人':'', '综合评价':'', '备注':'5年房产销售经验' },
+  { id:'c3', '姓名':'王强', '联系方式':'136****3456', '应聘岗位':'AI产品经理', '来源渠道':'内推', '当前阶段':'复试已约', '投递日期':'2026-05-20', '面试时间':'2026-06-01 10:00', HR负责人:'郭超', '用人部门负责人':'', '综合评价':'强推', '备注':'前字节产品经理' },
+  { id:'c4', '姓名':'赵丽', '联系方式':'137****7890', '应聘岗位':'直播主播', '来源渠道':'BOSS直聘', '当前阶段':'待筛选', '投递日期':'2026-06-01', '面试时间':'', HR负责人:'郭超', '用人部门负责人':'', '综合评价':'', '备注':'' },
+  { id:'c5', '姓名':'孙伟', '联系方式':'135****0123', '应聘岗位':'房产经纪人', '来源渠道':'智联招聘', '当前阶段':'初试待约', '投递日期':'2026-06-02', '面试时间':'', HR负责人:'郭超', '用人部门负责人':'', '综合评价':'', '备注':'' },
+  { id:'c6', '姓名':'刘洋', '联系方式':'133****4567', '应聘岗位':'房产经纪人', '来源渠道':'BOSS直聘', '当前阶段':'Offer谈判', '投递日期':'2026-05-15', '面试时间':'2026-05-25', HR负责人:'郭超', '用人部门负责人':'', '综合评价':'推荐', '备注':'已通过终试' },
+  { id:'c7', '姓名':'陈敏', '联系方式':'131****8901', '应聘岗位':'AI产品经理', '来源渠道':'猎头', '当前阶段':'已淘汰', '投递日期':'2026-05-10', '面试时间':'2026-05-20', HR负责人:'郭超', '用人部门负责人':'', '综合评价':'不推荐', '备注':'终试未通过' }
+];
+
+var MOCK_INTERVIEWS = [
+  { id:'i1', '候选人':'王强', '应聘岗位':'AI产品经理', '面试轮次':'初面', '面试官':'郭超', '面试日期':'2026-05-28', '专业能力':4, '沟通表达':5, '求职动机':4, '发展潜力':5, '综合结论':'强推', '面试记录':'产品sense很强，对AI+房产有深度理解' }
+];
+
+var MOCK_OFFERS = [
+  { id:'o1', '候选人':'刘洋', '应聘岗位':'房产经纪人', '所在部门':'买房代表业务部', '薪资元每月':15000, '预计入职日期':'2026-06-15', Offer状态:'已发送', '背调状态':'进行中', '入职手续':'未开始', '备注':'' }
+];
+
+// ============== API LAYER ==============
+var API = {
+  // 检查代理服务器连接状态（token 由服务端管理）
+  getToken: async function() {
+    try {
+      var resp = await fetch('/api/status');
+      var data = await resp.json();
+      if (data.ready) return 'proxy_managed'; // 服务端管理 token
+      if (data.reason === 'no_credentials') return null;
+      return null;
+    } catch(e) { return null; }
+  },
+
+  call: async function(method, path, body) {
+    // 通过同源代理访问飞书 API
+    var proxyPath = '/api/feishu' + path;
+    var opts = {
+      method: method,
+      headers: { 'Content-Type': 'application/json' }
+    };
+    if (body) opts.body = JSON.stringify(body);
+    var resp = await fetch(proxyPath, opts);
+    var data = await resp.json();
+    // 代理返回 401 说明未配置凭证
+    if (resp.status === 401) throw new Error('API_NOT_CONFIGURED');
+    return data;
+  },
+
+  listRecords: async function(tableId, params) {
+    params = params || '';
+    var path = '/bitable/v1/apps/' + CONFIG.baseToken + '/tables/' + tableId + '/records?page_size=100' + params;
+    return this.call('GET', path);
+  },
+
+  // Strip internal frontend fields (id, recordId) and convert date strings to timestamps
+  _cleanFields: function(fields) {
+    var clean = {};
+    var dateRe = /^\d{4}-\d{2}-\d{2}$/;          // YYYY-MM-DD
+    var datetimeRe = /^\d{4}-\d{2}-\d{2}\s+\d{1,2}:\d{2}$/;  // YYYY-MM-DD HH:MM
+    for (var k in fields) {
+      if (!fields.hasOwnProperty(k) || k === 'id' || k === 'recordId') continue;
+      var v = fields[k];
+      if (v === '' || v === null || v === undefined) continue; // 空值不发送
+      if (typeof v === 'string') {
+        if (dateRe.test(v)) {
+          v = new Date(v + 'T00:00:00+08:00').getTime();
+        } else if (datetimeRe.test(v)) {
+          v = new Date(v.replace(' ', 'T') + ':00+08:00').getTime();
+        }
+      }
+      clean[k] = v;
+    }
+    return clean;
+  },
+
+  createRecord: async function(tableId, fields) {
+    var path = '/bitable/v1/apps/' + CONFIG.baseToken + '/tables/' + tableId + '/records';
+    return this.call('POST', path, { fields: this._cleanFields(fields) });
+  },
+
+  updateRecord: async function(tableId, recordId, fields) {
+    var path = '/bitable/v1/apps/' + CONFIG.baseToken + '/tables/' + tableId + '/records/' + recordId;
+    return this.call('PUT', path, { fields: this._cleanFields(fields) });
+  },
+
+  deleteRecord: async function(tableId, recordId) {
+    var path = '/bitable/v1/apps/' + CONFIG.baseToken + '/tables/' + tableId + '/records/' + recordId;
+    return this.call('DELETE', path);
+  },
+
+  // Fetch all departments from Feishu Contacts API
+  fetchDepartments: async function() {
+    var allDepts = [];
+    var pageToken = '';
+    do {
+      var queryPath = '/contact/v3/departments?page_size=100&department_id_type=department_id';
+      if (pageToken) queryPath += '&page_token=' + pageToken;
+      var resp = await this.call('GET', queryPath);
+      if (resp.code === 0 && resp.data) {
+        var items = resp.data.items || [];
+        for (var i = 0; i < items.length; i++) {
+          allDepts.push({ id: items[i].department_id, name: items[i].name });
+        }
+        pageToken = resp.data.page_token || '';
+      } else {
+        break;
+      }
+    } while (pageToken);
+    return allDepts;
+  }
+};
+
+// ============== DATA LOADER ==============
+// Priority: Feishu API > localStorage cache > Mock data
+async function loadData() {
+  var apiLoaded = false;
+  // Step 1: Try Feishu API via proxy (requires server-side credentials)
+  try {
+    var token = await API.getToken();
+    if (token) {
+      var results = await Promise.all([
+        API.listRecords(CONFIG.tables.candidates.id),
+        API.listRecords(CONFIG.tables.positions.id),
+        API.listRecords(CONFIG.tables.interviews.id),
+        API.listRecords(CONFIG.tables.offers.id)
+      ]);
+      STATE.candidates = (results[0].data && results[0].data.items ? results[0].data.items.map(flattenRecord) : []);
+      STATE.positions = (results[1].data && results[1].data.items ? results[1].data.items.map(flattenRecord) : []);
+      STATE.interviews = (results[2].data && results[2].data.items ? results[2].data.items.map(flattenRecord) : []);
+      STATE.offers = (results[3].data && results[3].data.items ? results[3].data.items.map(flattenRecord) : []);
+      STATE.apiReady = true;
+      apiLoaded = true;
+      console.log('Data loaded from Feishu API');
+      // Fetch departments from Feishu Contacts (non-blocking)
+      refreshDepartments().catch(function(e) { console.warn('Department fetch failed:', e.message); });
+    }
+  } catch(e) {
+    console.warn('Feishu API unavailable:', e.message);
+  }
+
+  // Step 2: If API didn't load data, try localStorage cache
+  if (!apiLoaded || (!STATE.candidates.length && !STATE.positions.length && !STATE.interviews.length && !STATE.offers.length)) {
+    var localLoaded = loadFromLocal();
+    if (localLoaded) {
+      console.log('Data loaded from localStorage cache');
+    }
+  }
+
+  // Step 3: Fall back to mock data only if everything is completely empty
+  if (!STATE.candidates.length) STATE.candidates = MOCK_CANDIDATES;
+  if (!STATE.positions.length) STATE.positions = MOCK_POSITIONS;
+  if (!STATE.interviews.length) STATE.interviews = MOCK_INTERVIEWS;
+  if (!STATE.offers.length) STATE.offers = MOCK_OFFERS;
+
+  // Initialize departments from cache (or defaults)
+  STATE.departments = getDepartmentList();
+  console.log('Department list initialized: ' + STATE.departments.length + ' departments');
+}
+
+function flattenRecord(item) {
+  var obj = { id: item.record_id || '', recordId: item.record_id || '' };
+  if (item.fields) {
+    Object.keys(item.fields).forEach(function(k) {
+      var v = item.fields[k];
+      if (Array.isArray(v)) {
+        obj[k] = v.map(function(x) { return x.text || x.name || x; }).join(', ');
+      } else {
+        obj[k] = v;
+      }
+    });
+  }
+  return obj;
+}
+
+// ============== NAVIGATION ==============
+function setupNavigation() {
+  document.querySelectorAll('.nav-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      var module = item.dataset.module;
+      if (module) switchModule(module);
+    });
+  });
+}
+
+function switchModule(module) {
+  STATE.currentModule = module;
+  document.querySelectorAll('.nav-item').forEach(function(i) { i.classList.remove('active'); });
+  var navEl = document.querySelector('.nav-item[data-module="' + module + '"]');
+  if (navEl) navEl.classList.add('active');
+  var header = document.getElementById('pageTitle');
+  var content = document.getElementById('pageContent');
+  var titles = { dashboard:'招聘看板', 'ai-screening':'AI简历筛选', candidates:'候选人管理', interviews:'面试管理', offers:'Offer管理', positions:'岗位管理', settings:'系统设置' };
+  if (header) header.textContent = titles[module] || '';
+  renderModule(module, content);
+}
+
+function renderModule(module, container) {
+  if (!container) return;
+  switch(module) {
+    case 'dashboard': renderDashboard(container); break;
+    case 'ai-screening': renderAIScreening(container); break;
+    case 'candidates': renderCandidates(container); break;
+    case 'interviews': renderInterviews(container); break;
+    case 'offers': renderOffers(container); break;
+    case 'positions': renderPositions(container); break;
+    case 'settings': renderSettings(container); break;
+  }
+}
+
+// ============== DASHBOARD ==============
+function renderDashboard(container) {
+  var candidates = STATE.candidates;
+  var positions = STATE.positions;
+  var offers = STATE.offers;
+
+  var activePositions = positions.filter(function(p) { return p['岗位状态'] === '招聘中' || p['岗位状态'] === '面试中'; });
+  var totalCandidates = candidates.length;
+  var inPipeline = candidates.filter(function(c) { return ['已入职','已淘汰','已放弃','已录用'].indexOf(c['当前阶段']) === -1; }).length;
+  var pendingOffers = offers.filter(function(o) { return o['Offer状态'] === '已发送'; }).length;
+  var hiredMonth = candidates.filter(function(c) { return c['当前阶段'] === '已入职'; }).length;
+
+  var pipelineMap = {};
+  PIPELINE_STAGES.forEach(function(s) { pipelineMap[s.key] = 0; });
+  candidates.forEach(function(c) {
+    var key = stageToKey(c['当前阶段']);
+    if (pipelineMap[key] !== undefined) pipelineMap[key]++;
+  });
+
+  var channelMap = {};
+  candidates.forEach(function(c) {
+    var ch = c['来源渠道'] || '未知';
+    channelMap[ch] = (channelMap[ch] || 0) + 1;
+  });
+
+  container.innerHTML = '\
+    <div class="fade-in">\
+      <div class="metrics-grid">\
+        <div class="metric-card">\
+          <div class="metric-card-header">\
+            <span class="metric-card-label">在招岗位</span>\
+            <div class="metric-card-icon red">&#128203;</div>\
+          </div>\
+          <div class="metric-card-value">' + activePositions.length + '</div>\
+          <div class="metric-card-change up">&#8593; ' + positions.filter(function(p){return p['岗位状态']==='招聘中';}).length + ' 招聘中</div>\
+        </div>\
+        <div class="metric-card">\
+          <div class="metric-card-header">\
+            <span class="metric-card-label">候选人总数</span>\
+            <div class="metric-card-icon blue">&#128101;</div>\
+          </div>\
+          <div class="metric-card-value">' + totalCandidates + '</div>\
+          <div class="metric-card-change up">' + inPipeline + ' 流程中</div>\
+        </div>\
+        <div class="metric-card">\
+          <div class="metric-card-header">\
+            <span class="metric-card-label">待发Offer</span>\
+            <div class="metric-card-icon gold">&#128196;</div>\
+          </div>\
+          <div class="metric-card-value">' + pendingOffers + '</div>\
+          <div class="metric-card-change ' + (pendingOffers>0?'up':'down') + '">' + offers.filter(function(o){return o['Offer状态']==='已接受';}).length + ' 已接受</div>\
+        </div>\
+        <div class="metric-card">\
+          <div class="metric-card-header">\
+            <span class="metric-card-label">本月入职</span>\
+            <div class="metric-card-icon green">&#9989;</div>\
+          </div>\
+          <div class="metric-card-value">' + hiredMonth + '</div>\
+          <div class="metric-card-change up">目标 ' + activePositions.reduce(function(s,p){return s+(parseInt(p['招聘人数'])||0);},0) + ' 人</div>\
+        </div>\
+      </div>\
+      <div class="grid-2">\
+        <div class="card">\
+          <div class="card-header"><h3>招聘漏斗</h3><span class="badge badge-blue">' + totalCandidates + '人</span></div>\
+          <div class="card-body"><div class="chart-container" id="funnelChart"></div></div>\
+        </div>\
+        <div class="card">\
+          <div class="card-header"><h3>渠道分布</h3></div>\
+          <div class="card-body"><div class="chart-container" id="channelChart"></div></div>\
+        </div>\
+      </div>\
+      <div class="card module-fill" style="margin-top:20px;">\
+        <div class="card-header">\
+          <h3>在招岗位概览</h3>\
+          <button class="btn btn-outline btn-sm" onclick="switchModule(\'candidates\')">查看候选人 &rarr;</button>\
+        </div>\
+        <div class="card-body no-padding">\
+          <div class="table-container">\
+            <table>\
+              <thead><tr><th>岗位名称</th><th>部门</th><th>招聘人数</th><th>优先级</th><th>渠道</th><th>状态</th><th>开放日期</th></tr></thead>\
+              <tbody>' +
+                positions.map(function(p) { return '\
+                  <tr>\
+                    <td><strong>' + p['岗位名称'] + '</strong></td>\
+                    <td>' + (p['部门']||'-') + '</td>\
+                    <td>' + (p['招聘人数']||0) + '</td>\
+                    <td><span class="badge ' + ((p['优先级']||'').indexOf('P0')>=0?'badge-red':(p['优先级']||'').indexOf('P1')>=0?'badge-orange':'badge-blue') + '">' + (p['优先级']||'-') + '</span></td>\
+                    <td>' + (p['招聘渠道']||'-') + '</td>\
+                    <td>' + statusBadge(p['岗位状态']) + '</td>\
+                    <td>' + (p['开放日期']||'-') + '</td>\
+                  </tr>'; }).join('') + '\
+              </tbody>\
+            </table>\
+          </div>\
+        </div>\
+      </div>\
+    </div>';
+
+  setTimeout(function() {
+    renderFunnelChart(pipelineMap);
+    renderChannelChart(channelMap);
+  }, 100);
+}
+
+function renderFunnelChart(pipelineMap) {
+  var container = document.getElementById('funnelChart');
+  if (!container) return;
+  var stages = PIPELINE_STAGES.filter(function(s) { return s.key !== '已入职' && s.key !== '已淘汰' && s.key !== '已放弃' && s.key !== '已录用'; });
+  var maxVal = Math.max.apply(null, [1].concat(Object.values(pipelineMap)));
+  var html = '';
+  stages.forEach(function(s, i) {
+    var count = pipelineMap[s.key] || 0;
+    var width = (count / maxVal * 100).toFixed(1);
+    html += '\
+      <div style="display:flex;align-items:center;margin-bottom:8px;gap:10px;">\
+        <span style="width:70px;font-size:12px;color:var(--text-secondary);text-align:right;">' + s.label + '</span>\
+        <div style="flex:1;background:var(--bg-secondary);border-radius:6px;height:28px;overflow:hidden;">\
+          <div style="width:' + width + '%;height:100%;background:' + getFunnelColor(i) + ';border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;transition:width 0.6s ease;">\
+            <span style="font-size:12px;font-weight:700;color:white;">' + count + '人</span>\
+          </div>\
+        </div>\
+      </div>';
+  });
+  container.innerHTML = html;
+}
+
+function getFunnelColor(i) {
+  var colors = ['#9CA3AF','#6B7280','#4F46E5','#CAAB62','#F59E0B','#E50012','#8B5CF6','#059669'];
+  return colors[i] || '#6B7280';
+}
+
+function renderChannelChart(channelMap) {
+  var container = document.getElementById('channelChart');
+  if (!container) return;
+  var total = Object.values(channelMap).reduce(function(a,b){return a+b;},0);
+  var colors = ['#E50012','#CAAB62','#4F46E5','#059669','#F59E0B','#8B5CF6'];
+  var html = '<div style="display:flex;align-items:center;justify-content:center;height:100%;gap:30px;">';
+  html += '<div style="text-align:center;">';
+  var entries = Object.entries(channelMap).sort(function(a,b) { return b[1]-a[1]; });
+  entries.forEach(function(entry, i) {
+    var ch = entry[0];
+    var count = entry[1];
+    var pct = (count/total*100).toFixed(1);
+    html += '\
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">\
+        <div style="width:12px;height:12px;border-radius:3px;background:' + colors[i] + ';"></div>\
+        <span style="font-size:13px;">' + ch + '</span>\
+        <span style="font-weight:700;font-size:13px;margin-left:auto;">' + count + '人</span>\
+        <span style="font-size:11px;color:var(--text-light);">(' + pct + '%)</span>\
+      </div>';
+  });
+  html += '</div></div>';
+  container.innerHTML = html;
+}
+
+// ============== AI RESUME SCREENING ==============
+// Skill keyword library for matching
+var SKILL_KEYWORDS = {
+  '前端': ['HTML','CSS','JavaScript','TypeScript','React','Vue','Angular','Node.js','Webpack','Vite','小程序','Flutter','React Native','Next.js','Nuxt','Tailwind','Bootstrap','jQuery','Sass','Less'],
+  '后端': ['Java','Python','Go','C++','Rust','Spring','MyBatis','Django','Flask','FastAPI','Node.js','Express','NestJS','Kafka','RabbitMQ','Redis','MySQL','PostgreSQL','MongoDB','Elasticsearch','Docker','Kubernetes','gRPC'],
+  'AI/算法': ['机器学习','深度学习','NLP','CV','Transformer','PyTorch','TensorFlow','推荐系统','大模型','LLM','AIGC','数据挖掘','Python','Spark','Hadoop','特征工程','召回','排序'],
+  '数据': ['SQL','Python','ETL','Spark','Flink','Hive','ClickHouse','数据仓库','数据湖','BI','Tableau','数据分析','数据治理','Pandas','NumPy'],
+  '产品': ['需求分析','产品设计','PRD','Axure','Figma','用户研究','竞品分析','数据分析','项目管理','敏捷开发','A/B测试','产品规划'],
+  '测试': ['自动化测试','Selenium','Appium','JMeter','性能测试','接口测试','白盒','黑盒','测试用例','CI/CD','Jenkins','Pytest'],
+  '运维/SRE': ['Linux','Docker','Kubernetes','CI/CD','Terraform','Ansible','Prometheus','Grafana','Nginx','AWS','阿里云','腾讯云'],
+  '运营': ['用户运营','内容运营','活动运营','数据分析','SEO','SEM','私域','社群','增长','短视频','直播','投放','ROI'],
+  '房产/销售': ['房产','销售','客户','谈判','渠道','拓客','CRM','楼盘','二手房','新房','租赁','商圈','带看','签约','贷款'],
+  '设计': ['UI','UX','Figma','Sketch','Photoshop','Illustrator','After Effects','设计系统','交互设计','视觉设计','用户研究','动效']
+};
+
+var EDU_KEYWORDS = {
+  '博士': ['博士','PhD','博士后'],
+  '硕士': ['硕士','研究生','MBA','EMBA','Master'],
+  '本科': ['本科','学士','大学','Bachelor','B.S.','B.A.'],
+  '大专': ['大专','专科','职业学院']
+};
+
+function handleResumeFile(input) {
+  var file = input.files && input.files[0];
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) { alert('文件不能超过 10MB'); return; }
+  var ext = file.name.split('.').pop().toLowerCase();
+  if (['txt','md'].indexOf(ext) >= 0) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var text = e.target.result;
+      document.getElementById('aiResumeText').value = text;
+      showResumePreview(text);
+    };
+    reader.readAsText(file);
+  } else if (ext === 'pdf') {
+    parsePdfResume(file);
+  } else if (['doc','docx'].indexOf(ext) >= 0) {
+    parseWordResume(file);
+  } else {
+    alert('不支持的格式：.' + ext + '。支持 .txt / .md / .pdf / .doc / .docx');
+  }
+}
+
+function parsePdfResume(file) {
+  var fileReader = new FileReader();
+  fileReader.onload = function(e) {
+    var typedarray = new Uint8Array(e.target.result);
+    if (typeof pdfjsLib === 'undefined') { alert('PDF解析库加载失败，请检查网络后刷新重试'); return; }
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+    pdfjsLib.getDocument({ data: typedarray }).promise.then(function(pdf) {
+      var pages = [];
+      var total = pdf.numPages;
+      var extracted = [];
+      function loadPage(n) {
+        if (n > total) {
+          var text = extracted.join('\n\n');
+          document.getElementById('aiResumeText').value = text;
+          showResumePreview(text);
+          return;
+        }
+        pdf.getPage(n).then(function(page) {
+          page.getTextContent().then(function(content) {
+            var lastY = null;
+            var lineBuffer = [];
+            content.items.forEach(function(item) {
+              if (item.transform) {
+                if (lastY !== null && Math.abs(item.transform[5] - lastY) > 3) {
+                  extracted.push(lineBuffer.join(' '));
+                  lineBuffer = [];
+                }
+                lastY = item.transform[5];
+              }
+              lineBuffer.push(item.str);
+            });
+            if (lineBuffer.length) extracted.push(lineBuffer.join(' '));
+            loadPage(n + 1);
+          });
+        });
+      }
+      loadPage(1);
+    }).catch(function(err) {
+      alert('PDF解析失败：' + err.message + '。请将简历内容粘贴到文本框。');
+    });
+  };
+  fileReader.readAsArrayBuffer(file);
+}
+
+function parseWordResume(file) {
+  if (typeof mammoth === 'undefined') { alert('Word解析库加载失败，请检查网络后刷新重试'); return; }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    mammoth.extractRawText({ arrayBuffer: e.target.result })
+      .then(function(result) {
+        var text = result.value;
+        document.getElementById('aiResumeText').value = text;
+        showResumePreview(text);
+      })
+      .catch(function(err) {
+        alert('Word解析失败：' + err.message + '。请将简历内容粘贴到文本框。');
+      });
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function showResumePreview(text) {
+  var preview = document.getElementById('aiResumePreview');
+  if (!preview) return;
+  var snippet = text.substring(0, 500);
+  preview.textContent = snippet + (text.length > 500 ? '\n\n...（已加载 ' + text.length + ' 字符）' : '');
+  preview.style.display = 'block';
+}
+
+function clearAIForm() {
+  var fileInput = document.getElementById('aiResumeFile');
+  if (fileInput) fileInput.value = '';
+  var textArea = document.getElementById('aiResumeText');
+  if (textArea) textArea.value = '';
+  var preview = document.getElementById('aiResumePreview');
+  if (preview) { preview.style.display = 'none'; preview.textContent = ''; }
+  var resultTop = document.getElementById('aiResultTop');
+  if (resultTop) resultTop.style.display = 'none';
+  var posSelect = document.getElementById('aiTargetPosition');
+  if (posSelect) posSelect.selectedIndex = 0;
+  var btn = document.getElementById('aiAnalyzeBtn');
+  if (btn) { btn.textContent = '\uD83D\uDD0D 开始智能分析'; btn.disabled = false; }
+}
+
+function runAIScreening() {
+  var resumeText = document.getElementById('aiResumeText').value.trim();
+  var posSelect = document.getElementById('aiTargetPosition');
+  var posName = posSelect.value;
+  var selectedOption = posSelect.selectedOptions && posSelect.selectedOptions[0];
+  var posDesc = selectedOption ? decodeURIComponent(selectedOption.dataset.desc || '') : '';
+  var posDept = selectedOption ? decodeURIComponent(selectedOption.dataset.dept || '') : '';
+
+  if (!resumeText) { alert('请先上传简历或粘贴简历内容'); return; }
+  if (!posName) { alert('请选择目标岗位'); return; }
+  if (resumeText.length < 20) { alert('简历内容太短，请提供更完整的简历信息'); return; }
+
+  var btn = document.getElementById('aiAnalyzeBtn');
+  btn.textContent = '分析中...'; btn.disabled = true;
+
+  setTimeout(function() {
+    var result = performAIMatch(resumeText, posName, posDesc, posDept);
+    renderAIResult(result);
+    btn.textContent = '\uD83D\uDD0D 重新分析'; btn.disabled = false;
+  }, 800);
+}
+
+function performAIMatch(resumeText, posName, posDesc, posDept) {
+  var combinedText = (resumeText + ' ' + posDesc).toLowerCase();
+  var resumeLower = resumeText.toLowerCase();
+  var posLower = (posName + ' ' + posDesc + ' ' + posDept).toLowerCase();
+
+  // 1. Skills match (40%)
+  var resumeSkills = [];
+  var posSkills = [];
+  Object.values(SKILL_KEYWORDS).forEach(function(terms) {
+    terms.forEach(function(t) {
+      var tl = t.toLowerCase();
+      if (resumeLower.indexOf(tl) >= 0) resumeSkills.push(t);
+      if (posLower.indexOf(tl) >= 0) posSkills.push(t);
+    });
+  });
+  resumeSkills = resumeSkills.filter(function(v,i,a){return a.indexOf(v)===i;});
+  posSkills = posSkills.filter(function(v,i,a){return a.indexOf(v)===i;});
+  var skillsOverlap = posSkills.length > 0 ? resumeSkills.filter(function(s){return posSkills.indexOf(s)>=0;}).length / posSkills.length : 0.3;
+  var skillsScore = Math.min(100, Math.round(skillsOverlap * 100));
+
+  // 2. Experience match (30%)
+  var expScore = 50;
+  var expYears = 0;
+  var expMatch = resumeLower.match(/(\d+)[\s\-]*(年|years?)/i);
+  if (expMatch) expYears = parseInt(expMatch[1]);
+  var posExpMatch = posLower.match(/(\d+)[\s\-]*(年|years?)/i);
+  var posExpReq = posExpMatch ? parseInt(posExpMatch[1]) : 3;
+  if (expYears > 0 && posExpReq > 0) {
+    expScore = Math.min(100, Math.round((expYears / posExpReq) * 100));
+  }
+
+  // 3. Education match (15%)
+  var eduScore = 50;
+  var eduLevels = ['博士','硕士','本科','大专'];
+  var resumeEduIdx = -1;
+  var posEduIdx = -1;
+  for (var i = 0; i < eduLevels.length; i++) {
+    var keys = EDU_KEYWORDS[eduLevels[i]];
+    for (var j = 0; j < keys.length; j++) {
+      if (resumeLower.indexOf(keys[j].toLowerCase()) >= 0 && resumeEduIdx < 0) resumeEduIdx = i;
+      if (posLower.indexOf(keys[j].toLowerCase()) >= 0 && posEduIdx < 0) posEduIdx = i;
+    }
+  }
+  if (resumeEduIdx >= 0 && posEduIdx >= 0) {
+    eduScore = resumeEduIdx <= posEduIdx ? 100 : Math.max(40, 100 - (resumeEduIdx - posEduIdx) * 20);
+  }
+
+  // 4. Domain / keyword match (15%)
+  var domainScore = 40;
+  var allWords = resumeLower.split(/[\s,，。；;：:、\n\r\t]+/).filter(function(w){return w.length>=2;});
+  var posWords = posLower.split(/[\s,，。；;：:、\n\r\t]+/).filter(function(w){return w.length>=2;});
+  var wordOverlap = 0;
+  posWords.forEach(function(pw) {
+    if (allWords.indexOf(pw) >= 0 || resumeLower.indexOf(pw) >= 0) wordOverlap++;
+  });
+  if (posWords.length > 0) domainScore = Math.min(100, Math.round((wordOverlap / posWords.length) * 100));
+
+  // Total (weighted)
+  var total = Math.round(skillsScore * 0.40 + expScore * 0.30 + eduScore * 0.15 + domainScore * 0.10);
+
+  // 5. Potential score (5%) — calculated from balance of other dimensions + slight randomness
+  var avgScore = (skillsScore + expScore + eduScore + domainScore) / 4;
+  var consistency = 100 - (Math.max(skillsScore, expScore, eduScore, domainScore) - Math.min(skillsScore, expScore, eduScore, domainScore)) / 2;
+  var potentialScore = Math.round((avgScore * 0.6 + consistency * 0.3 + total * 0.1));
+
+  return {
+    total: total,
+    skillsScore: skillsScore,
+    skillsResume: resumeSkills.slice(0, 8),
+    skillsPosition: posSkills.slice(0, 8),
+    expScore: expScore,
+    expYears: expYears,
+    posExpReq: posExpReq,
+    eduScore: eduScore,
+    domainScore: domainScore,
+    potentialScore: potentialScore,
+    posName: posName,
+    posDept: posDept
+  };
+}
+
+function renderAIResult(result) {
+  // --- Show result card, scroll to top ---
+  var resultTop = document.getElementById('aiResultTop');
+  resultTop.style.display = 'block';
+  document.getElementById('aiResultTitle').textContent = '分析结果 — ' + result.posName + '（' + (result.posDept||'未知部门') + '）';
+
+  // --- Star Rating ---
+  var starsHtml = '';
+  var starCount = result.total >= 90 ? 5 : result.total >= 75 ? 4 : result.total >= 60 ? 3 : result.total >= 40 ? 2 : result.total >= 25 ? 1 : 0;
+  for (var s = 0; s < 5; s++) {
+    starsHtml += '<span class="' + (s < starCount ? 'star-on' : 'star-off') + '">' + (s < starCount ? '★' : '☆') + '</span>';
+  }
+  starsHtml += '<span style="font-size:clamp(10px,0.7vw,12px);color:var(--text-light);margin-left:6px;">' + result.total + '%</span>';
+  document.getElementById('aiStarRating').innerHTML = starsHtml;
+
+  // --- Dimensions (5-axis radar) ---
+  var dims = [
+    { name: '技能匹配', score: result.skillsScore, color: '#E50012', weight: 40 },
+    { name: '经验匹配', score: result.expScore, color: '#CAAB62', weight: 30 },
+    { name: '学历匹配', score: result.eduScore, color: '#4F46E5', weight: 15 },
+    { name: '行业匹配', score: result.domainScore, color: '#059669', weight: 10 },
+    { name: '综合潜力', score: result.potentialScore, color: '#8B5CF6', weight: 5 }
+  ];
+
+  // --- Percentage scores list ---
+  var scoresHtml = '';
+  dims.forEach(function(d) {
+    var barColor = d.score >= 75 ? '#059669' : d.score >= 55 ? '#F59E0B' : '#E50012';
+    scoresHtml += '\
+      <div class="ai-score-row">\
+        <span class="score-label-text">' + d.name + ' <small style="color:var(--text-light)">(' + d.weight + '%)</small></span>\
+        <div class="score-bar-wrap"><div class="score-bar-fill" style="width:' + d.score + '%;background:' + barColor + ';"></div></div>\
+        <span class="score-pct" style="color:' + barColor + '">' + d.score + '%</span>\
+      </div>';
+  });
+  document.getElementById('aiScoresList').innerHTML = scoresHtml;
+
+  // --- Draw Radar Chart ---
+  drawRadarChart(dims);
+
+  // --- Strengths & Concerns ---
+  var strengths = [];
+  var concerns = [];
+  dims.forEach(function(d) {
+    if (d.score >= 70) strengths.push(d);
+    if (d.score < 55) concerns.push(d);
+  });
+
+  var strengthsHtml = '';
+  if (strengths.length > 0) {
+    strengths.forEach(function(d) {
+      var detail = '';
+      if (d.name === '技能匹配') detail = d.score >= 85 ? '技能栈与岗位要求高度吻合' : '核心技能基本覆盖岗位需求';
+      else if (d.name === '经验匹配') detail = d.score >= 80 ? '工作经验远超岗位要求' : '具备匹配的项目经验';
+      else if (d.name === '学历匹配') detail = d.score >= 80 ? '学历背景优异' : '学历符合岗位要求';
+      else if (d.name === '行业匹配') detail = d.score >= 75 ? '行业知识与岗位高度相关' : '行业背景基本对口';
+      else if (d.name === '综合潜力') detail = d.score >= 75 ? '综合能力突出，成长潜力大' : '具备较好的发展潜力';
+      strengthsHtml += '<li><strong>' + d.name + ' ' + d.score + '%：</strong>' + detail + '</li>';
+    });
+  } else {
+    strengthsHtml = '<li>暂无特别突出的维度，建议综合评估</li>';
+  }
+
+  var concernsHtml = '';
+  if (concerns.length > 0) {
+    concerns.forEach(function(d) {
+      var detail = '';
+      if (d.name === '技能匹配') detail = '核心技能存在较大差距，需面试重点考察';
+      else if (d.name === '经验匹配') detail = '工作经验不足，可能影响上手速度';
+      else if (d.name === '学历匹配') detail = '学历与岗位要求有一定差距';
+      else if (d.name === '行业匹配') detail = '行业经验不足，需要磨合期';
+      else if (d.name === '综合潜力') detail = '综合评估偏弱，建议关注成长性';
+      concernsHtml += '<li><strong>' + d.name + ' ' + d.score + '%：</strong>' + detail + '</li>';
+    });
+  } else {
+    concernsHtml = '<li>各项指标均在可接受范围内，暂无特别需关注的短板</li>';
+  }
+
+  document.getElementById('aiStrengths').innerHTML = '<h4>&#10024; 核心优势</h4><ul>' + strengthsHtml + '</ul>';
+  document.getElementById('aiConcerns').innerHTML = '<h4>&#9888;&#65039; 待关注点</h4><ul>' + concernsHtml + '</ul>';
+
+  // --- Recommendation ---
+  var tag = result.total >= 80 ? '强烈推荐面试' : result.total >= 65 ? '推荐进入初筛' : result.total >= 45 ? '建议综合评估' : '不推荐该岗位';
+  var tagColor = result.total >= 80 ? '#059669' : result.total >= 65 ? '#4F46E5' : result.total >= 45 ? '#F59E0B' : '#E50012';
+  var recHtml = '<strong style="color:' + tagColor + ';font-size:clamp(14px,1vw,16px);">【' + tag + '】</strong><br><br>';
+
+  recHtml += '<strong>综合匹配度：</strong><span style="font-size:clamp(18px,1.4vw,22px);font-weight:700;color:' + tagColor + ';">' + result.total + '%</span><br>';
+
+  var action = '';
+  if (result.total >= 80) action = '该候选人与岗位高度匹配，综合维度表现优异。建议优先安排面试，重点考察软素质和团队适配度。';
+  else if (result.total >= 65) action = '候选人基本匹配岗位要求，建议进入初筛阶段。面试中应重点验证技能差距项' + (concerns.length > 0 ? '（特别是' + concerns[0].name + '）' : '') + '。';
+  else if (result.total >= 45) action = '匹配度一般，可作为备选候选人。建议关注其学习能力、成长潜力及薪资预期，待优选集候选人确认后再做决定。';
+  else action = '匹配度较低，不推荐继续推进该岗位。可考虑推荐至其他更匹配的岗位，或建议候选人补充相关技能后重新评估。';
+  recHtml += '<strong>综合建议：</strong>' + action;
+
+  document.getElementById('aiRecommendationTop').innerHTML = recHtml;
+
+  // Smooth scroll result into view
+  setTimeout(function() {
+    resultTop.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 150);
+}
+
+// ============== RADAR CHART ==============
+function drawRadarChart(dims) {
+  var canvas = document.getElementById('aiRadarChart');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var w = canvas.width;
+  var h = canvas.height;
+  var cx = w / 2;
+  var cy = h / 2;
+  var r = Math.min(cx, cy) * 0.65;
+  var n = dims.length;
+
+  ctx.clearRect(0, 0, w, h);
+
+  // Background concentric pentagons
+  var levels = 5;
+  for (var lv = 1; lv <= levels; lv++) {
+    ctx.beginPath();
+    for (var i = 0; i < n; i++) {
+      var angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
+      var rr = r * (lv / levels);
+      var x = cx + rr * Math.cos(angle);
+      var y = cy + rr * Math.sin(angle);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = lv === levels ? '#D1D5DB' : '#E5E7EB';
+    ctx.lineWidth = lv === levels ? 1.2 : 0.6;
+    ctx.stroke();
+    // Level labels
+    if (lv === 2) { ctx.fillStyle = '#D1D5DB'; ctx.font = '9px "Microsoft YaHei"'; ctx.fillText('40', cx + 8, cy - r * 0.4 + 4); }
+    if (lv === 4) { ctx.fillStyle = '#D1D5DB'; ctx.font = '9px "Microsoft YaHei"'; ctx.fillText('80', cx + 8, cy - r * 0.8 + 4); }
+  }
+
+  // Axis lines
+  for (var i = 0; i < n; i++) {
+    var angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
+    ctx.strokeStyle = '#D1D5DB';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+  }
+
+  // Axis labels
+  dims.forEach(function(d, i) {
+    var angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
+    var lx = cx + (r + 26) * Math.cos(angle);
+    var ly = cy + (r + 26) * Math.sin(angle);
+    ctx.fillStyle = '#374151';
+    ctx.font = 'bold 11px "Microsoft YaHei"';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(d.name, lx, ly);
+    // Score label
+    var slx = cx + (r + 12) * Math.cos(angle);
+    var sly = cy + (r + 12) * Math.sin(angle);
+    ctx.fillStyle = d.color;
+    ctx.font = 'bold 10px "Microsoft YaHei"';
+    ctx.fillText(d.score + '%', slx, sly);
+  });
+
+  // Data polygon
+  ctx.beginPath();
+  dims.forEach(function(d, i) {
+    var angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
+    var rr = r * (d.score / 100);
+    var x = cx + rr * Math.cos(angle);
+    var y = cy + rr * Math.sin(angle);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(229, 0, 18, 0.15)';
+  ctx.fill();
+  ctx.strokeStyle = '#E50012';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Data points
+  dims.forEach(function(d, i) {
+    var angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
+    var rr = r * (d.score / 100);
+    var x = cx + rr * Math.cos(angle);
+    var y = cy + rr * Math.sin(angle);
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, 2 * Math.PI);
+    ctx.fillStyle = d.color;
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  });
+}
+
+// ============== AI SCREENING ==============
+function renderAIScreening(container) {
+  var positions = STATE.positions;
+
+  var html = '\
+    <div class="fade-in">\
+      <!-- RESULT CARD (TOP, hidden initially) -->\
+      <div class="ai-result-top" id="aiResultTop">\
+        <div class="card">\
+          <div class="card-header">\
+            <h3><span>&#127919;</span> <span id="aiResultTitle">分析结果</span></h3>\
+            <div class="ai-stars" id="aiStarRating"></div>\
+          </div>\
+          <div class="card-body">\
+            <div class="ai-result-row">\
+              <div class="ai-radar-wrap"><canvas id="aiRadarChart" width="300" height="300"></canvas></div>\
+              <div class="ai-scores-list" id="aiScoresList"></div>\
+            </div>\
+            <div class="ai-sw-grid">\
+              <div class="ai-strengths" id="aiStrengths"><h4>&#10024; 核心优势</h4><ul></ul></div>\
+              <div class="ai-concerns" id="aiConcerns"><h4>&#9888;&#65039; 待关注点</h4><ul></ul></div>\
+            </div>\
+            <div class="ai-recommendation-new" id="aiRecommendationTop"></div>\
+          </div>\
+        </div>\
+      </div>\
+\
+      <!-- INPUT CARD (BOTTOM) -->\
+      <div class="card module-fill ai-input-card">\
+        <div class="card-header">\
+          <h3>&#129302; AI简历筛选 — 人岗智能匹配</h3>\
+          <span class="badge badge-red">Beta</span>\
+        </div>\
+        <div class="card-body">\
+          <div class="ai-upload-zone" id="aiUploadZone">\
+            <div class="upload-icon">&#128196;</div>\
+            <div class="upload-text">点击上传或拖拽简历文件</div>\
+            <div class="upload-hint">支持 .txt / .md / .pdf / .doc / .docx 格式，或在下方直接粘贴简历内容</div>\
+            <input type="file" id="aiResumeFile" accept=".txt,.md,.pdf,.doc,.docx" onchange="handleResumeFile(this)">\
+          </div>\
+          <div class="ai-resume-preview" id="aiResumePreview"></div>\
+          <div class="ai-form-row">\
+            <div class="form-group" style="margin-bottom:0;">\
+              <label class="form-label">选择目标岗位</label>\
+              <select class="form-select" id="aiTargetPosition">\
+                <option value="">— 请选择岗位 —</option>' +
+                positions.map(function(p) {
+                  return '<option value="' + p['岗位名称'] + '" data-desc="' + encodeURIComponent(p['岗位职责描述'] || '') + '" data-dept="' + encodeURIComponent(p['部门'] || '') + '">' + p['岗位名称'] + '（' + (p['部门']||'') + '）</option>';
+                }).join('') + '\
+              </select>\
+            </div>\
+            <div class="form-group" style="margin-bottom:0;">\
+              <label class="form-label">或粘贴简历内容</label>\
+              <textarea class="form-textarea" id="aiResumeText" placeholder="粘贴候选人简历文本..." rows="3" style="min-height:72px;"></textarea>\
+            </div>\
+          </div>\
+          <div class="ai-actions">\
+            <button class="btn btn-primary" onclick="runAIScreening()" id="aiAnalyzeBtn">&#128269; 开始智能分析</button>\
+            <button class="btn btn-outline" onclick="clearAIForm()">清空</button>\
+            <span style="font-size:11px;color:var(--text-light);">分析约需 1-3 秒</span>\
+          </div>\
+        </div>\
+      </div>\
+    </div>';
+
+  container.innerHTML = html;
+
+  // Init drag & drop
+  setTimeout(function() {
+    initAIDragDrop();
+  }, 200);
+}
+
+function initAIDragDrop() {
+  var zone = document.getElementById('aiUploadZone');
+  if (!zone) return;
+  // Remove old listeners by cloning (simple approach)
+  ['dragenter','dragover','dragleave','drop'].forEach(function(evt) {
+    document.addEventListener(evt, function(e) { e.preventDefault(); e.stopPropagation(); });
+  });
+  ['dragenter','dragover'].forEach(function(evt) {
+    zone.addEventListener(evt, function() { zone.classList.add('drag-active'); });
+  });
+  ['dragleave','drop'].forEach(function(evt) {
+    zone.addEventListener(evt, function() { zone.classList.remove('drag-active'); });
+  });
+  zone.addEventListener('drop', function(e) {
+    var file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file) {
+      var input = document.getElementById('aiResumeFile');
+      var dt = new DataTransfer();
+      dt.items.add(file);
+      input.files = dt.files;
+      handleResumeFile(input);
+    }
+  });
+}
+
+// ============== CANDIDATES ==============
+function renderCandidates(container) {
+  var candidates = STATE.candidates;
+
+  container.innerHTML = '\
+    <div class="fade-in">\
+      <div class="card">\
+        <div class="card-header">\
+          <h3>候选人看板</h3>\
+          <div style="display:flex;gap:8px;">\
+            <button class="btn btn-primary btn-sm" onclick="showCandidateModal()">+ 新增候选人</button>\
+          </div>\
+        </div>\
+        <div class="card-body">\
+          <div class="board-view">' +
+            PIPELINE_STAGES.map(function(stage) {
+              var stageCands = candidates.filter(function(c) { return stageToKey(c['当前阶段']) === stage.key; });
+              return '\
+                <div class="board-column">\
+                  <div class="board-column-title">\
+                    <span>' + stage.label + '</span>\
+                    <span class="badge badge-' + stage.color + '">' + stageCands.length + '</span>\
+                  </div>' +
+                  stageCands.map(function(c) { return '\
+                    <div class="board-card" onclick="showCandidateDetail(\'' + c.id + '\')">\
+                      <div class="board-card-title">' + c['姓名'] + (candidateHasResume(c) ? ' <span title="有简历附件" style="color:var(--brand-gold);font-size:11px;">📄</span>' : '') + '</div>\
+                      <div class="board-card-info">' + (c['应聘岗位']||'-') + ' · ' + (c['来源渠道']||'-') + '</div>\
+                      ' + (c['面试时间'] ? '<div class="board-card-info" style="margin-top:4px;color:var(--brand-red);">&#128197; ' + c['面试时间'] + '</div>' : '') + '\
+                    </div>'; }).join('') + '\
+                  ' + (stageCands.length === 0 ? '<div style="text-align:center;padding:20px;color:var(--text-light);font-size:12px;">暂无</div>' : '') + '\
+                </div>';
+            }).join('') + '\
+          </div>\
+        </div>\
+      </div>\
+      <div class="card module-fill" style="margin-top:20px;">\
+        <div class="card-header"><h3>全部候选人</h3></div>\
+        <div class="card-body no-padding">\
+          <div class="search-bar" style="padding:12px 24px;">\
+            <div class="search-input-wrap">\
+              <span class="search-icon">&#128269;</span>\
+              <input class="search-input" id="candidateSearch" placeholder="搜索候选人姓名、岗位..." oninput="filterCandidates()">\
+            </div>\
+            <select class="filter-select" id="stageFilter" onchange="filterCandidates()">\
+              <option value="">全部阶段</option>' +
+              PIPELINE_STAGES.map(function(s) { return '<option value="' + s.key + '">' + s.label + '</option>'; }).join('') + '\
+            </select>\
+            <select class="filter-select" id="positionFilter" onchange="filterCandidates()">\
+              <option value="">全部岗位</option>' +
+              (function() {
+                var seen = {};
+                return candidates.map(function(c){return c['应聘岗位'];}).filter(Boolean).filter(function(p){if(seen[p])return false;seen[p]=true;return true;}).map(function(p){return '<option value="'+p+'">'+p+'</option>';}).join('');
+              })() + '\
+            </select>\
+          </div>\
+          <div class="table-container">\
+            <table id="candidatesTable">\
+              <thead><tr><th>姓名</th><th>应聘岗位</th><th>来源</th><th>当前阶段</th><th>投递日期</th><th>面试时间</th><th>HR负责人</th><th>操作</th></tr></thead>\
+              <tbody id="candidatesTableBody">' +
+                candidates.map(function(c) { return '\
+                  <tr data-stage="' + stageToKey(c['当前阶段']) + '" data-position="' + (c['应聘岗位']||'') + '" data-name="' + c['姓名'] + '">\
+                    <td><strong>' + c['姓名'] + '</strong></td>\
+                    <td>' + (c['应聘岗位']||'-') + '</td>\
+                    <td>' + (c['来源渠道']||'-') + '</td>\
+                    <td>' + statusBadge(c['当前阶段']) + '</td>\
+                    <td>' + (c['投递日期']||'-') + '</td>\
+                    <td>' + (c['面试时间']||'-') + '</td>\
+                    <td>' + (c['HR负责人']||'-') + '</td>\
+                    <td>\
+                      <button class="btn btn-outline btn-sm" onclick="showCandidateDetail(\'' + c.id + '\')">详情</button>\
+                      <button class="btn btn-outline btn-sm" onclick="advanceStage(\'' + c.id + '\')" style="margin-left:4px;">推进</button>\
+                      ' + (candidateHasResume(c) ? '<button class="btn btn-gold btn-sm" onclick="viewResume(\'' + c.id + '\')" style="margin-left:4px;">📄 简历</button>' : '') + '\
+                    </td>\
+                  </tr>'; }).join('') + '\
+              </tbody>\
+            </table>\
+          </div>\
+        </div>\
+      </div>\
+    </div>';
+}
+
+function filterCandidates() {
+  var search = (document.getElementById('candidateSearch') ? document.getElementById('candidateSearch').value : '').toLowerCase();
+  var stageFilter = document.getElementById('stageFilter') ? document.getElementById('stageFilter').value : '';
+  var posFilter = document.getElementById('positionFilter') ? document.getElementById('positionFilter').value : '';
+  document.querySelectorAll('#candidatesTableBody tr').forEach(function(row) {
+    var name = (row.dataset.name || '').toLowerCase();
+    var stage = row.dataset.stage || '';
+    var pos = row.dataset.position || '';
+    var match = (!search || name.indexOf(search) >= 0) &&
+                (!stageFilter || stage === stageFilter) &&
+                (!posFilter || pos === posFilter);
+    row.style.display = match ? '' : 'none';
+  });
+}
+
+function stageToKey(stageName) {
+  return stageName || '待筛选';
+}
+
+// ============== CANDIDATE MODAL ==============
+function showCandidateModal() {
+  var positions = STATE.positions.filter(function(p) { return p['岗位状态'] !== '已关闭'; });
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = '\
+    <div class="modal" style="max-width:640px;">\
+      <div class="modal-header">\
+        <h3>新增候选人</h3>\
+        <button class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()">&times;</button>\
+      </div>\
+      <div class="modal-body">\
+        <!-- 简历上传区域 -->\
+        <div class="resume-upload-zone" id="resumeUploadZone"\
+             onclick="document.getElementById(\'resumeFileInput\').click()"\
+             ondragover="event.preventDefault();this.classList.add(\'drag-over\')"\
+             ondragleave="this.classList.remove(\'drag-over\')"\
+             ondrop="event.preventDefault();this.classList.remove(\'drag-over\');handleCandidateResume(event.dataTransfer.files[0])">\
+          <div class="upload-icon">📄</div>\
+          <div class="upload-text">点击上传或拖拽简历到此处</div>\
+          <div class="upload-hint">支持 PDF / DOCX / TXT / 图片格式</div>\
+          <input type="file" id="resumeFileInput" accept=".pdf,.docx,.doc,.txt,.png,.jpg,.jpeg" style="display:none"\
+                 onchange="handleCandidateResume(this.files[0])">\
+        </div>\
+        <!-- 解析状态 -->\
+        <div class="resume-upload-status" id="resumeUploadStatus">\
+          <span class="status-spinner"></span><span id="resumeStatusText">正在解析简历...</span>\
+        </div>\
+        <!-- 解析结果预览 -->\
+        <div class="resume-parsed-fields" id="resumeParsedFields">\
+          <div class="parsed-title">✅ 简历已解析，以下信息已自动填充</div>\
+          <div class="parsed-row" id="resumeParsedRow"></div>\
+        </div>\
+        <!-- 表单区域 -->\
+        <div class="form-row">\
+          <div class="form-group"><label class="form-label">姓名 *</label><input class="form-input" id="newName" placeholder="候选人姓名"></div>\
+          <div class="form-group"><label class="form-label">联系方式</label><input class="form-input" id="newContact" placeholder="手机号"></div>\
+        </div>\
+        <div class="form-row">\
+          <div class="form-group"><label class="form-label">邮箱</label><input class="form-input" id="newEmail" placeholder="电子邮箱"></div>\
+          <div class="form-group"><label class="form-label">学历</label><input class="form-input" id="newEducation" placeholder="最高学历"></div>\
+        </div>\
+        <div class="form-row">\
+          <div class="form-group">\
+            <label class="form-label">应聘岗位 *</label>\
+            <select class="form-select" id="newPosition">\
+              <option value="">请选择</option>' +
+              positions.map(function(p) { return '<option value="' + p['岗位名称'] + '">' + p['岗位名称'] + '</option>'; }).join('') + '\
+            </select>\
+          </div>\
+          <div class="form-group">\
+            <label class="form-label">来源渠道</label>\
+            <select class="form-select" id="newChannel">\
+              <option value="">请选择</option>\
+              <option>BOSS直聘</option><option>猎聘</option><option>智联招聘</option>\
+              <option>内推</option><option>猎头</option><option>其他</option>\
+            </select>\
+          </div>\
+        </div>\
+        <div class="form-group"><label class="form-label">备注</label><textarea class="form-textarea" id="newNote" placeholder="补充信息"></textarea></div>\
+        <!-- 简历缓存 -->\
+        <input type="hidden" id="resumeFileData" value="">\
+      </div>\
+      <div class="modal-footer">\
+        <button class="btn btn-outline" onclick="this.closest(\'.modal-overlay\').remove()">取消</button>\
+        <button class="btn btn-primary" onclick="addCandidate()">确认添加</button>\
+      </div>\
+    </div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+}
+
+async function addCandidate() {
+  var nameEl = document.getElementById('newName');
+  var posEl = document.getElementById('newPosition');
+  var name = nameEl ? nameEl.value.trim() : '';
+  var position = posEl ? posEl.value : '';
+  if (!name || !position) { alert('请填写姓名和应聘岗位'); return; }
+  var contact = (document.getElementById('newContact') ? document.getElementById('newContact').value : '');
+  var email = (document.getElementById('newEmail') ? document.getElementById('newEmail').value : '');
+  var education = (document.getElementById('newEducation') ? document.getElementById('newEducation').value : '');
+  var channel = (document.getElementById('newChannel') ? document.getElementById('newChannel').value : '');
+  var note = (document.getElementById('newNote') ? document.getElementById('newNote').value : '');
+  var resumeBase64 = (document.getElementById('resumeFileData') ? document.getElementById('resumeFileData').value : '');
+  var today = new Date().toISOString().slice(0,10);
+
+  var newCand = {
+    id: 'c' + Date.now(),
+    '姓名': name, '联系方式': contact, '邮箱': email, '学历': education,
+    '应聘岗位': position, '来源渠道': channel,
+    '当前阶段': '待筛选', '投递日期': today, '面试时间': '', HR负责人: '郭超',
+    '用人部门负责人': '', '综合评价': '', '备注': note,
+    '简历附件': resumeBase64
+  };
+
+  if (STATE.apiReady) {
+    try {
+      var resp = await API.createRecord(CONFIG.tables.candidates.id, newCand);
+      if (resp && resp.data && resp.data.record && resp.data.record.record_id) {
+        newCand.recordId = resp.data.record.record_id;
+      }
+    } catch(e) { console.error('API error:', e); }
+  }
+
+  STATE.candidates.unshift(newCand);
+  var ov = document.querySelector('.modal-overlay');
+  if (ov) ov.remove();
+  refreshCurrentModule();
+  updateBadges();
+}
+
+// ============== RESUME PARSER ==============
+var RESUME_PARSE_PATTERNS = [
+  // 姓名：中文2-4字，通常在简历最开头
+  { key: '姓名', regex: /姓\s*名[：:\s]*([^\n]{2,10})/ },
+  { key: '姓名', regex: /^([\u4e00-\u9fa5]{2,4})\s*$/m, isFirstChineseName: true },
+  // 手机号
+  { key: '手机', regex: /(?:手机|电话|联系方式|mobile|phone|tel)[：:\s]*(\+?[\d\-]{7,15})/i },
+  { key: '手机', regex: /(1[3-9]\d)\s*\-?\s*(\d{4})\s*\-?\s*(\d{4})/ },
+  { key: '手机', regex: /1[3-9]\d{9}/ },
+  // 邮箱
+  { key: '邮箱', regex: /(?:邮箱|email|e-mail|邮件)[：:\s]*([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/i },
+  { key: '邮箱', regex: /([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/ },
+  // 学历
+  { key: '学历', regex: /(?:学历|最高学历|教育程度)[：:\s]*(博士|硕士|本科|大专|中专|高中)/ },
+  { key: '学历', regex: /(博士研究生|硕士研究生|大学本科|大学专科)/ },
+  // 学校
+  { key: '学校', regex: /(?:毕业院校|学校|院校|大学)[：:\s]*([^\n]{3,30})/ },
+  // 专业
+  { key: '专业', regex: /(?:专业|主修)[：:\s]*([^\n]{2,30})/ },
+  // 工作年限/经验
+  { key: '经验', regex: /(\d{1,2})\s*年.*?(?:经验|工作经验|工作年限|工龄)/ },
+  // 当前公司
+  { key: '公司', regex: /(?:目前就职|当前公司|所在公司|公司)[：:\s]*([^\n]{2,30})/ },
+  // 职位
+  { key: '当前职位', regex: /(?:目前职位|当前岗位|职位|岗位)[：:\s]*([^\n]{2,30})/ },
+  // 技能
+  { key: '技能', regex: /(?:技能|专业技能|技术栈)[：:\s]*([^\n]{3,200})/ },
+];
+
+function handleCandidateResume(file) {
+  if (!file) return;
+  var statusEl = document.getElementById('resumeUploadStatus');
+  var statusText = document.getElementById('resumeStatusText');
+  var zoneEl = document.getElementById('resumeUploadZone');
+  var parsedEl = document.getElementById('resumeParsedFields');
+  
+  // Validate file type
+  var ext = file.name.split('.').pop().toLowerCase();
+  var validExts = ['pdf', 'docx', 'doc', 'txt', 'png', 'jpg', 'jpeg'];
+  if (validExts.indexOf(ext) === -1) {
+    showResumeStatus('error', '不支持的文件格式，请上传 PDF/DOCX/TXT/图片文件');
+    return;
+  }
+  // Validate size (max 10MB)
+  if (file.size > 10 * 1024 * 1024) {
+    showResumeStatus('error', '文件过大，请上传小于 10MB 的简历');
+    return;
+  }
+
+  // Show loading
+  showResumeStatus('loading', '正在解析简历：' + file.name + '...');
+  zoneEl.style.opacity = '0.6';
+  zoneEl.style.pointerEvents = 'none';
+  hideResumeParsedFields();
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var arrayBuffer = e.target.result;
+    if (ext === 'pdf') {
+      parseCandidatePdf(arrayBuffer, file);
+    } else if (ext === 'docx' || ext === 'doc') {
+      parseCandidateDocx(arrayBuffer, file);
+    } else if (ext === 'txt') {
+      var text = new TextDecoder('utf-8').decode(new Uint8Array(arrayBuffer));
+      processResumeText(text);
+    } else {
+      // Image files - try to extract text via OCR-like approach (basic)
+      // For now, show friendly message that image-based resumes need manual entry
+      showResumeStatus('error', '图片格式简历暂不支持自动解析，请手动填写信息');
+      zoneEl.style.opacity = '1';
+      zoneEl.style.pointerEvents = 'auto';
+      return;
+    }
+  };
+
+  if (ext === 'txt') {
+    reader.readAsArrayBuffer(file);
+  } else {
+    reader.readAsArrayBuffer(file);
+  }
+}
+
+function parseCandidatePdf(arrayBuffer, file) {
+  // Convert ArrayBuffer to Uint8Array for pdf.js
+  var uint8Array = new Uint8Array(arrayBuffer);
+  // Use pdfjsLib (from CDN)
+  if (typeof pdfjsLib === 'undefined') {
+    showResumeStatus('error', 'PDF 解析库加载失败，请刷新页面后重试');
+    document.getElementById('resumeUploadZone').style.opacity = '1';
+    document.getElementById('resumeUploadZone').style.pointerEvents = 'auto';
+    return;
+  }
+  
+  pdfjsLib.getDocument({ data: uint8Array }).promise.then(function(pdf) {
+    var totalPages = pdf.numPages;
+    var textPromises = [];
+    for (var i = 1; i <= totalPages; i++) {
+      textPromises.push(
+        pdf.getPage(i).then(function(page) {
+          return page.getTextContent().then(function(content) {
+            return content.items.map(function(item) { return item.str; }).join(' ');
+          });
+        })
+      );
+    }
+    return Promise.all(textPromises);
+  }).then(function(pageTexts) {
+    var fullText = pageTexts.join('\n');
+    processResumeText(fullText);
+    // Store file as base64 for persistence
+    storeResumeBase64(arrayBuffer, file);
+  }).catch(function(err) {
+    console.error('PDF parse error:', err);
+    showResumeStatus('error', 'PDF 解析失败，请确认文件未加密或损坏');
+    document.getElementById('resumeUploadZone').style.opacity = '1';
+    document.getElementById('resumeUploadZone').style.pointerEvents = 'auto';
+  });
+}
+
+function parseCandidateDocx(arrayBuffer, file) {
+  if (typeof mammoth === 'undefined') {
+    showResumeStatus('error', 'DOCX 解析库加载失败，请刷新页面后重试');
+    document.getElementById('resumeUploadZone').style.opacity = '1';
+    document.getElementById('resumeUploadZone').style.pointerEvents = 'auto';
+    return;
+  }
+  
+  mammoth.extractRawText({ arrayBuffer: arrayBuffer }).then(function(result) {
+    processResumeText(result.value);
+    storeResumeBase64(arrayBuffer, file);
+  }).catch(function(err) {
+    console.error('DOCX parse error:', err);
+    showResumeStatus('error', 'DOCX 解析失败，请确认文件格式正确');
+    document.getElementById('resumeUploadZone').style.opacity = '1';
+    document.getElementById('resumeUploadZone').style.pointerEvents = 'auto';
+  });
+}
+
+function processResumeText(text) {
+  var parsed = {};
+  var rawText = text.replace(/\s+/g, ' ').trim();
+  
+  // Run all patterns
+  RESUME_PARSE_PATTERNS.forEach(function(pattern) {
+    if (parsed[pattern.key] && pattern.key !== '姓名') return; // Skip if already found (except name)
+    var match = rawText.match(pattern.regex);
+    if (match) {
+      if (pattern.key === '手机') {
+        // Clean phone number
+        var phone = match[1] || match[0];
+        phone = phone.replace(/[\s\-\(\)（\）]/g, '');
+        if (phone.length >= 11 && phone.startsWith('1')) {
+          parsed['手机'] = phone.slice(0, 11);
+        }
+      } else if (pattern.key === '邮箱') {
+        parsed['邮箱'] = match[1] || match[0];
+      } else if (pattern.key === '姓名' && pattern.isFirstChineseName) {
+        if (!parsed['姓名']) parsed['姓名'] = match[1] || match[0];
+      } else if (pattern.key === '学历') {
+        parsed['学历'] = match[1] || match[0];
+      } else if (pattern.key === '学校') {
+        parsed['学校'] = match[1].replace(/[：:\s]/g, '').trim();
+      } else if (pattern.key === '经验') {
+        parsed['经验'] = match[1] + '年';
+      } else if (pattern.key === '技能') {
+        parsed['技能'] = match[1].trim();
+      } else {
+        parsed[pattern.key] = (match[1] || match[0]).replace(/[：:\s]+$/, '').trim();
+      }
+    }
+  });
+
+  // Auto-fill form
+  fillFormFromResume(parsed);
+  showParsedFields(parsed);
+  showResumeStatus('success', '简历解析完成');
+  document.getElementById('resumeUploadZone').style.opacity = '1';
+  document.getElementById('resumeUploadZone').style.pointerEvents = 'auto';
+}
+
+function fillFormFromResume(parsed) {
+  if (parsed['姓名']) {
+    var nameEl = document.getElementById('newName');
+    if (nameEl && !nameEl.value) nameEl.value = parsed['姓名'];
+  }
+  if (parsed['手机']) {
+    var contactEl = document.getElementById('newContact');
+    if (contactEl && !contactEl.value) contactEl.value = parsed['手机'];
+  }
+  if (parsed['邮箱']) {
+    var emailEl = document.getElementById('newEmail');
+    if (emailEl && !emailEl.value) emailEl.value = parsed['邮箱'];
+  }
+  if (parsed['学历']) {
+    var eduEl = document.getElementById('newEducation');
+    if (eduEl && !eduEl.value) eduEl.value = parsed['学历'];
+  }
+  // Auto-fill note with extra info
+  var noteEl = document.getElementById('newNote');
+  if (noteEl) {
+    var extras = [];
+    if (parsed['学校'] && !noteEl.value.includes(parsed['学校'])) extras.push('学校: ' + parsed['学校']);
+    if (parsed['专业'] && !noteEl.value.includes(parsed['专业'])) extras.push('专业: ' + parsed['专业']);
+    if (parsed['经验'] && !noteEl.value.includes(parsed['经验'])) extras.push('经验: ' + parsed['经验']);
+    if (parsed['公司'] && !noteEl.value.includes(parsed['公司'])) extras.push('当前公司: ' + parsed['公司']);
+    if (parsed['当前职位'] && !noteEl.value.includes(parsed['当前职位'])) extras.push('当前职位: ' + parsed['当前职位']);
+    if (parsed['技能'] && !noteEl.value.includes(parsed['技能'])) extras.push('技能: ' + parsed['技能']);
+    if (extras.length > 0 && noteEl.value) {
+      noteEl.value = noteEl.value + '\n---\n' + extras.join('\n');
+    } else if (extras.length > 0) {
+      noteEl.value = extras.join('\n');
+    }
+  }
+}
+
+function showParsedFields(parsed) {
+  var el = document.getElementById('resumeParsedFields');
+  var row = document.getElementById('resumeParsedRow');
+  if (!el || !row) return;
+  
+  var items = [];
+  if (parsed['姓名']) items.push('<span class="parsed-item">👤 <strong>' + parsed['姓名'] + '</strong></span>');
+  if (parsed['手机']) items.push('<span class="parsed-item">📱 ' + parsed['手机'] + '</span>');
+  if (parsed['邮箱']) items.push('<span class="parsed-item">✉ ' + parsed['邮箱'] + '</span>');
+  if (parsed['学历']) items.push('<span class="parsed-item">🎓 ' + parsed['学历'] + '</span>');
+  if (parsed['学校']) items.push('<span class="parsed-item">🏫 ' + parsed['学校'] + '</span>');
+  if (parsed['经验']) items.push('<span class="parsed-item">💼 ' + parsed['经验'] + '</span>');
+  
+  if (items.length > 0) {
+    row.innerHTML = items.join('');
+    el.classList.add('show');
+  }
+}
+
+function hideResumeParsedFields() {
+  var el = document.getElementById('resumeParsedFields');
+  if (el) el.classList.remove('show');
+}
+
+function showResumeStatus(type, message) {
+  var el = document.getElementById('resumeUploadStatus');
+  var textEl = document.getElementById('resumeStatusText');
+  if (!el || !textEl) return;
+  el.className = 'resume-upload-status show ' + type;
+  textEl.textContent = message;
+  // Auto-hide success/error after 6 seconds
+  if (type === 'success' || type === 'error') {
+    setTimeout(function() { el.classList.remove('show'); }, 6000);
+  }
+}
+
+function storeResumeBase64(arrayBuffer, file) {
+  var bytes = new Uint8Array(arrayBuffer);
+  var binary = '';
+  for (var i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  var base64 = btoa(binary);
+  var dataUrl = 'data:' + (file.type || 'application/octet-stream') + ';base64,' + base64;
+  var hiddenInput = document.getElementById('resumeFileData');
+  if (hiddenInput) hiddenInput.value = dataUrl;
+}
+
+function advanceStage(candidateId) {
+  var candidate = STATE.candidates.find(function(c) { return c.id === candidateId; });
+  if (!candidate) return;
+  var stages = PIPELINE_STAGES.map(function(s) { return s.label; });
+  var currentIdx = stages.indexOf(candidate['当前阶段']);
+  var nextStages = stages.slice(currentIdx + 1, currentIdx + 4);
+
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = '\
+    <div class="modal" style="max-width:420px;">\
+      <div class="modal-header">\
+        <h3>推进 ' + candidate['姓名'] + '</h3>\
+        <button class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()">&times;</button>\
+      </div>\
+      <div class="modal-body">\
+        <p style="margin-bottom:16px;font-size:13px;">当前阶段：' + statusBadge(candidate['当前阶段']) + '</p>\
+        <div class="form-group">\
+          <label class="form-label">推进到</label>\
+          <select class="form-select" id="advanceStage">' +
+            nextStages.map(function(s) { return '<option value="' + s + '">' + s + '</option>'; }).join('') + '\
+          </select>\
+        </div>\
+      </div>\
+      <div class="modal-footer">\
+        <button class="btn btn-outline" onclick="this.closest(\'.modal-overlay\').remove()">取消</button>\
+        <button class="btn btn-primary" onclick="confirmAdvance(\'' + candidateId + '\')">确认推进</button>\
+      </div>\
+    </div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+}
+
+function confirmAdvance(candidateId) {
+  var newStage = document.getElementById('advanceStage') ? document.getElementById('advanceStage').value : '';
+  if (!newStage) return;
+  var candidate = STATE.candidates.find(function(c) { return c.id === candidateId; });
+  if (candidate) {
+    candidate['当前阶段'] = newStage;
+    if (STATE.apiReady) {
+      API.updateRecord(CONFIG.tables.candidates.id, candidate.recordId, { '当前阶段': newStage }).catch(function(e) { console.error(e); });
+    }
+  }
+  var ov = document.querySelector('.modal-overlay');
+  if (ov) ov.remove();
+  refreshCurrentModule();
+  updateBadges();
+}
+
+function showCandidateDetail(candidateId) {
+  var c = STATE.candidates.find(function(x) { return x.id === candidateId; });
+  if (!c) return;
+  var stageIsInterview = c['当前阶段'] === '初试已约' || c['当前阶段'] === '复试已约';
+  var evalUrl = getEvalUrl(c['姓名'], c['应聘岗位'], stageIsInterview ? '复试' : '初试');
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = '\
+    <div class="modal" style="max-width:500px;">\
+      <div class="modal-header">\
+        <h3>' + c['姓名'] + '</h3>\
+        <button class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()">&times;</button>\
+      </div>\
+      <div class="modal-body">\
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">\
+          <div><strong>应聘岗位：</strong>' + (c['应聘岗位']||'-') + '</div>\
+          <div><strong>来源渠道：</strong>' + (c['来源渠道']||'-') + '</div>\
+          <div><strong>联系方式：</strong>' + (c['联系方式']||'-') + '</div>\
+          <div><strong>当前阶段：</strong>' + statusBadge(c['当前阶段']) + '</div>\
+          <div><strong>投递日期：</strong>' + (c['投递日期']||'-') + '</div>\
+          <div><strong>面试时间：</strong>' + (c['面试时间']||'-') + '</div>\
+          <div><strong>HR负责人：</strong>' + (c['HR负责人']||'-') + '</div>\
+          <div><strong>用人部门：</strong>' + (c['用人部门负责人']||'-') + '</div>\
+          ' + (c['综合评价'] ? '<div><strong>综合评价：</strong>' + statusBadge(c['综合评价']) + '</div>' : '') + '\
+        </div>\
+        ' + (c['备注'] ? '<div style="margin-top:16px;padding:12px;background:var(--bg-secondary);border-radius:8px;font-size:13px;"><strong>备注：</strong>' + c['备注'] + '</div>' : '') + '\
+        ' + (stageIsInterview ? '\
+        <div style="margin-top:16px;padding:14px;background:var(--brand-red-light);border-radius:8px;">\
+          <div style="font-size:12px;color:var(--brand-red);font-weight:600;margin-bottom:8px;">邀请面试官填写评价</div>\
+          <div style="font-size:11px;color:var(--text-secondary);margin-bottom:10px;">复制以下链接发送给面试官，面试官打开即可填写面试评价：</div>\
+          <div style="display:flex;gap:8px;">\
+            <input class="form-input" id="evalLinkInput" value="' + evalUrl + '" readonly style="font-size:11px;flex:1;background:white;">\
+            <button class="btn btn-primary btn-sm" onclick="copyEvalLink()">复制链接</button>\
+          </div>\
+        </div>' : '') + '\
+      </div>\
+      <div class="modal-footer" style="justify-content:space-between;">\
+        <div>' + (candidateHasResume(c) ? '<button class="btn btn-gold btn-sm" onclick="this.closest(\'.modal-overlay\').remove();viewResume(\'' + c.id + '\')">📄 查看简历</button>' : '<span style="font-size:11px;color:var(--text-light);">暂无简历附件</span>') + '</div>\
+        <div style="display:flex;gap:10px;">\
+          <button class="btn btn-outline" onclick="this.closest(\'.modal-overlay\').remove()">关闭</button>\
+          <button class="btn btn-primary" onclick="this.closest(\'.modal-overlay\').remove();advanceStage(\'' + c.id + '\')">推进阶段</button>\
+        </div>\
+      </div>\
+    </div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+}
+
+function getEvalUrl(name, position, round) {
+  var base = window.location.origin + window.location.pathname;
+  return base + '#evaluate?candidate=' + encodeURIComponent(name) + '&position=' + encodeURIComponent(position) + '&round=' + encodeURIComponent(round);
+}
+
+function copyEvalLink() {
+  var input = document.getElementById('evalLinkInput');
+  if (!input) return;
+  input.select();
+  document.execCommand('copy');
+  alert('评价链接已复制到剪贴板！\n请通过飞书消息发送给面试官。');
+}
+
+function candidateHasResume(candidate) {
+  return !!(candidate && candidate['简历附件'] && candidate['简历附件'].length > 100);
+}
+
+function viewResume(candidateId) {
+  var c = STATE.candidates.find(function(x) { return x.id === candidateId; });
+  if (!c || !candidateHasResume(c)) { alert('该候选人暂无简历附件'); return; }
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  var resumeData = c['简历附件'];
+  var isImage = resumeData.indexOf('data:image/') === 0;
+  var isPdf = resumeData.indexOf('data:application/pdf') === 0 || resumeData.indexOf('%PDF') === 0;
+  var fileName = (c['姓名'] || '候选人') + '的简历';
+  
+  overlay.innerHTML = '\
+    <div class="modal" style="max-width:780px;max-height:90vh;">\
+      <div class="modal-header">\
+        <h3>📄 ' + fileName + '</h3>\
+        <div style="display:flex;gap:8px;">\
+          <button class="btn btn-outline btn-sm" onclick="downloadResume(\'' + candidateId + '\')">⬇ 下载</button>\
+          <button class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()">&times;</button>\
+        </div>\
+      </div>\
+      <div class="modal-body" style="padding:0;background:#525659;display:flex;align-items:center;justify-content:center;min-height:400px;">\
+        ' + (function() {
+          if (isImage) {
+            return '<img src="' + resumeData + '" style="max-width:100%;max-height:75vh;display:block;">';
+          } else if (isPdf) {
+            return '<iframe src="' + resumeData + '" style="width:100%;height:75vh;border:none;"></iframe>';
+          } else {
+            // Try to render as text/HTML
+            var text = '';
+            try {
+              var byteString = atob(resumeData.split(',')[1] || '');
+              var bytes = new Uint8Array(byteString.length);
+              for (var i = 0; i < byteString.length; i++) { bytes[i] = byteString.charCodeAt(i); }
+              text = new TextDecoder('utf-8').decode(bytes);
+            } catch(e) { text = '无法预览此格式，请点击下载按钮查看文件。'; }
+            return '<div style="padding:24px;background:white;width:100%;max-height:75vh;overflow:auto;white-space:pre-wrap;font-size:13px;line-height:1.8;font-family:inherit;">' + text.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>';
+          }
+        })() + '\
+      </div>\
+    </div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+}
+
+function downloadResume(candidateId) {
+  var c = STATE.candidates.find(function(x) { return x.id === candidateId; });
+  if (!c || !candidateHasResume(c)) return;
+  var resumeData = c['简历附件'];
+  var ext = 'pdf';
+  if (resumeData.indexOf('data:image/') === 0) { ext = resumeData.split(';')[0].split('/')[1] || 'png'; }
+  else if (resumeData.indexOf('data:application/vnd.openxmlformats') === 0) { ext = 'docx'; }
+  
+  var a = document.createElement('a');
+  a.href = resumeData;
+  a.download = (c['姓名'] || '候选人') + '简历.' + ext;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// ============== INTERVIEWS ==============
+function renderInterviews(container) {
+  var interviews = STATE.interviews;
+  var candidates = STATE.candidates;
+  var upcomingInterviews = candidates.filter(function(c) { return c['面试时间'] && ['已入职','已淘汰','已放弃'].indexOf(c['当前阶段']) === -1; });
+
+  container.innerHTML = '\
+    <div class="fade-in">\
+      <div class="metrics-grid">\
+        <div class="metric-card">\
+          <div class="metric-card-header"><span class="metric-card-label">待面试</span><div class="metric-card-icon red">&#128197;</div></div>\
+          <div class="metric-card-value">' + upcomingInterviews.length + '</div>\
+        </div>\
+        <div class="metric-card">\
+          <div class="metric-card-header"><span class="metric-card-label">已完成面试</span><div class="metric-card-icon green">&#10003;</div></div>\
+          <div class="metric-card-value">' + interviews.length + '</div>\
+        </div>\
+        <div class="metric-card">\
+          <div class="metric-card-header"><span class="metric-card-label">平均评分</span><div class="metric-card-icon gold">&#11088;</div></div>\
+          <div class="metric-card-value">' + calcAvgRating(interviews) + '</div>\
+        </div>\
+        <div class="metric-card">\
+          <div class="metric-card-header"><span class="metric-card-label">通过率</span><div class="metric-card-icon blue">&#128200;</div></div>\
+          <div class="metric-card-value">' + calcPassRate(interviews) + '%</div>\
+        </div>\
+      </div>\
+      <div class="card">\
+        <div class="card-header"><h3>即将面试</h3></div>\
+        <div class="card-body no-padding">\
+          <div class="table-container">\
+            <table>\
+              <thead><tr><th>候选人</th><th>岗位</th><th>面试时间</th><th>当前阶段</th><th>操作</th></tr></thead>\
+              <tbody>' +
+                (upcomingInterviews.length === 0 ? '<tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:40px;">暂无即将面试</td></tr>' :
+                upcomingInterviews.map(function(c) { return '\
+                  <tr>\
+                    <td><strong>' + c['姓名'] + '</strong></td><td>' + (c['应聘岗位']||'-') + '</td>\
+                    <td style="color:var(--brand-red);">' + c['面试时间'] + '</td>\
+                    <td>' + statusBadge(c['当前阶段']) + '</td>\
+                    <td><button class="btn btn-primary btn-sm" onclick="showInterviewForm(\'' + c.id + '\')">录入评价</button></td>\
+                  </tr>'; }).join('')) + '\
+              </tbody>\
+            </table>\
+          </div>\
+        </div>\
+      </div>\
+      <div class="card module-fill" style="margin-top:20px;">\
+        <div class="card-header"><h3>面试记录</h3></div>\
+        <div class="card-body no-padding">\
+          <div class="table-container">\
+            <table>\
+              <thead><tr>\
+                <th>候选人</th><th>岗位</th><th>轮次</th><th>面试官</th><th>日期</th>\
+                <th>专业</th><th>沟通</th><th>动机</th><th>潜力</th><th>结论</th>\
+              </tr></thead>\
+              <tbody>' +
+                (interviews.length === 0 ? '<tr><td colspan="10" style="text-align:center;color:var(--text-light);padding:40px;">暂无面试记录</td></tr>' :
+                interviews.map(function(iv) { return '\
+                  <tr>\
+                    <td><strong>' + (iv['候选人']||'-') + '</strong></td>\
+                    <td>' + (iv['应聘岗位']||'-') + '</td>\
+                    <td>' + (iv['面试轮次']||'-') + '</td>\
+                    <td>' + (iv['面试官']||'-') + '</td>\
+                    <td>' + (iv['面试日期']||'-') + '</td>\
+                    <td>' + renderStars(iv['专业能力']) + '</td>\
+                    <td>' + renderStars(iv['沟通表达']) + '</td>\
+                    <td>' + renderStars(iv['求职动机']) + '</td>\
+                    <td>' + renderStars(iv['发展潜力']) + '</td>\
+                    <td>' + statusBadge(iv['综合结论']) + '</td>\
+                  </tr>'; }).join('')) + '\
+              </tbody>\
+            </table>\
+          </div>\
+        </div>\
+      </div>\
+    </div>';
+}
+
+function renderStars(rating) {
+  if (!rating || rating === 0) return '<span style="color:var(--text-light);">—</span>';
+  var stars = '';
+  for (var i = 0; i < rating; i++) stars += '★';
+  for (var j = rating; j < 5; j++) stars += '☆';
+  return stars;
+}
+
+function calcAvgRating(interviews) {
+  var rated = interviews.filter(function(iv) { return iv['专业能力'] > 0; });
+  if (!rated.length) return '—';
+  var avg = rated.reduce(function(s,iv) { return s + (iv['专业能力']+iv['沟通表达']+iv['求职动机']+iv['发展潜力'])/4; }, 0) / rated.length;
+  return avg.toFixed(1) + ' / 5';
+}
+
+function calcPassRate(interviews) {
+  var decided = interviews.filter(function(iv) { return iv['综合结论'] && iv['综合结论'] !== '待面试'; });
+  if (!decided.length) return '—';
+  var passed = decided.filter(function(iv) { return iv['综合结论'] === '推荐通过' || iv['综合结论'] === '通过'; });
+  return (passed.length / decided.length * 100).toFixed(0);
+}
+
+function showInterviewForm(candidateId) {
+  var c = STATE.candidates.find(function(x) { return x.id === candidateId; });
+  if (!c) return;
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = '\
+    <div class="modal">\
+      <div class="modal-header">\
+        <h3>面试评价 — ' + c['姓名'] + '</h3>\
+        <button class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()">&times;</button>\
+      </div>\
+      <div class="modal-body">\
+        <div class="form-row">\
+          <div class="form-group"><label class="form-label">面试轮次</label><select class="form-select" id="ivRound"><option>初面</option><option>复面</option><option>三面</option><option>四面</option></select></div>\
+          <div class="form-group"><label class="form-label">面试日期</label><input class="form-input" type="date" id="ivDate" value="' + new Date().toISOString().slice(0,10) + '"></div>\
+        </div>\
+        <p style="font-size:13px;font-weight:600;margin:16px 0 8px;">评分（1-5分）</p>\
+        <div class="form-row">\
+          <div class="form-group"><label class="form-label">专业能力</label><input class="form-input" type="number" id="ivScore1" min="1" max="5" value="3"></div>\
+          <div class="form-group"><label class="form-label">沟通表达</label><input class="form-input" type="number" id="ivScore2" min="1" max="5" value="3"></div>\
+          <div class="form-group"><label class="form-label">求职动机</label><input class="form-input" type="number" id="ivScore3" min="1" max="5" value="3"></div>\
+          <div class="form-group"><label class="form-label">发展潜力</label><input class="form-input" type="number" id="ivScore4" min="1" max="5" value="3"></div>\
+        </div>\
+        <div class="form-group"><label class="form-label">综合结论</label><select class="form-select" id="ivConclusion"><option>推荐通过</option><option>通过</option><option>待定</option><option>不通过</option></select></div>\
+        <div class="form-group"><label class="form-label">面试记录</label><textarea class="form-textarea" id="ivNote" placeholder="记录面试问答要点..."></textarea></div>\
+      </div>\
+      <div class="modal-footer">\
+        <button class="btn btn-outline" onclick="this.closest(\'.modal-overlay\').remove()">取消</button>\
+        <button class="btn btn-primary" onclick="submitInterview(\'' + candidateId + '\')">提交评价</button>\
+      </div>\
+    </div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+}
+
+async function submitInterview(candidateId) {
+  var c = STATE.candidates.find(function(x) { return x.id === candidateId; });
+  if (!c) return;
+  var interview = {
+    id: 'i' + Date.now(),
+    '候选人': c['姓名'],
+    '应聘岗位': c['应聘岗位'],
+    '面试轮次': (document.getElementById('ivRound') ? document.getElementById('ivRound').value : '') || '初面',
+    '面试官': '郭超',
+    '面试日期': (document.getElementById('ivDate') ? document.getElementById('ivDate').value : ''),
+    '专业能力': parseInt((document.getElementById('ivScore1') ? document.getElementById('ivScore1').value : 0)) || 0,
+    '沟通表达': parseInt((document.getElementById('ivScore2') ? document.getElementById('ivScore2').value : 0)) || 0,
+    '求职动机': parseInt((document.getElementById('ivScore3') ? document.getElementById('ivScore3').value : 0)) || 0,
+    '发展潜力': parseInt((document.getElementById('ivScore4') ? document.getElementById('ivScore4').value : 0)) || 0,
+    '综合结论': (document.getElementById('ivConclusion') ? document.getElementById('ivConclusion').value : ''),
+    '面试记录': (document.getElementById('ivNote') ? document.getElementById('ivNote').value : '')
+  };
+
+  if (STATE.apiReady) {
+    try {
+      var resp = await API.createRecord(CONFIG.tables.interviews.id, interview);
+      if (resp && resp.data && resp.data.record && resp.data.record.record_id) {
+        interview.recordId = resp.data.record.record_id;
+      }
+    } catch(e) { console.error(e); }
+  }
+
+  STATE.interviews.push(interview);
+  if (c['当前阶段'] === '初试已约') c['当前阶段'] = '复试待约';
+  else if (c['当前阶段'] === '复试已约') c['当前阶段'] = 'Offer谈判';
+
+  var ov = document.querySelector('.modal-overlay');
+  if (ov) ov.remove();
+  refreshCurrentModule();
+  updateBadges();
+}
+
+// ============== OFFERS ==============
+function renderOffers(container) {
+  var offers = STATE.offers;
+
+  container.innerHTML = '\
+    <div class="fade-in">\
+      <div class="metrics-grid">\
+        <div class="metric-card">\
+          <div class="metric-card-header"><span class="metric-card-label">Offer总数</span><div class="metric-card-icon blue">&#128196;</div></div>\
+          <div class="metric-card-value">' + offers.length + '</div>\
+        </div>\
+        <div class="metric-card">\
+          <div class="metric-card-header"><span class="metric-card-label">已发送</span><div class="metric-card-icon gold">&#128232;</div></div>\
+          <div class="metric-card-value">' + offers.filter(function(o){return o['Offer状态']==='已发送';}).length + '</div>\
+        </div>\
+        <div class="metric-card">\
+          <div class="metric-card-header"><span class="metric-card-label">已接受</span><div class="metric-card-icon green">&#9989;</div></div>\
+          <div class="metric-card-value">' + offers.filter(function(o){return o['Offer状态']==='已接受';}).length + '</div>\
+        </div>\
+        <div class="metric-card">\
+          <div class="metric-card-header"><span class="metric-card-label">背调通过率</span><div class="metric-card-icon red">&#128269;</div></div>\
+          <div class="metric-card-value">' + calcBgRate(offers) + '%</div>\
+        </div>\
+      </div>\
+      <div class="card module-fill">\
+        <div class="card-header">\
+          <h3>Offer列表</h3>\
+          <button class="btn btn-primary btn-sm" onclick="showOfferModal()">+ 新建Offer</button>\
+        </div>\
+        <div class="card-body no-padding">\
+          <div class="table-container">\
+            <table>\
+              <thead><tr>\
+                <th>候选人</th><th>岗位</th><th>部门</th><th>薪资(月)</th><th>入职日期</th>\
+                <th>Offer状态</th><th>背调</th><th>入职手续</th><th>操作</th>\
+              </tr></thead>\
+              <tbody>' +
+                (offers.length === 0 ? '<tr><td colspan="9" style="text-align:center;color:var(--text-light);padding:40px;">暂无Offer记录</td></tr>' :
+                offers.map(function(o) { return '\
+                  <tr>\
+                    <td><strong>' + (o['候选人']||'-') + '</strong></td>\
+                    <td>' + (o['应聘岗位']||'-') + '</td>\
+                    <td>' + (o['所在部门']||'-') + '</td>\
+                    <td style="color:var(--brand-red);font-weight:700;">¥' + ((o['薪资元每月']||0).toLocaleString()) + '</td>\
+                    <td>' + (o['预计入职日期']||'-') + '</td>\
+                    <td>' + statusBadge(o['Offer状态']) + '</td>\
+                    <td>' + statusBadge(o['背调状态']) + '</td>\
+                    <td>' + statusBadge(o['入职手续']) + '</td>\
+                    <td><button class="btn btn-outline btn-sm" onclick="showOfferDetail(\'' + o.id + '\')">详情</button></td>\
+                  </tr>'; }).join('')) + '\
+              </tbody>\
+            </table>\
+          </div>\
+        </div>\
+      </div>\
+    </div>';
+}
+
+function calcBgRate(offers) {
+  var completed = offers.filter(function(o) { return o['背调状态'] === '通过' || o['背调状态'] === '未通过'; });
+  if (!completed.length) return '—';
+  var passed = completed.filter(function(o) { return o['背调状态'] === '通过'; });
+  return (passed.length / completed.length * 100).toFixed(0);
+}
+
+function showOfferModal() {
+  var candidates = STATE.candidates.filter(function(c) { return c['当前阶段'] === 'Offer谈判'; });
+  var deptHtml = renderDepartmentOptions('');
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = '\
+    <div class="modal">\
+      <div class="modal-header">\
+        <h3>新建Offer</h3>\
+        <button class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()">&times;</button>\
+      </div>\
+      <div class="modal-body">\
+        <div class="form-row">\
+          <div class="form-group">\
+            <label class="form-label">候选人</label>\
+            <select class="form-select" id="offerCandidate" onchange="autoFillOfferDept()">' +
+              candidates.map(function(c) { return '<option value="' + c['姓名'] + '">' + c['姓名'] + ' — ' + c['应聘岗位'] + '</option>'; }).join('') + '\
+              ' + (candidates.length===0 ? '<option>无Offer阶段候选人</option>' : '') + '\
+            </select>\
+          </div>\
+          <div class="form-group"><label class="form-label">薪资(元/月)</label><input class="form-input" type="number" id="offerSalary" placeholder="15000"></div>\
+        </div>\
+        <div class="form-row">\
+          <div class="form-group"><label class="form-label">部门</label><select class="form-select" id="offerDept">' + deptHtml + '</select></div>\
+          <div class="form-group"><label class="form-label">预计入职日期</label><input class="form-input" type="date" id="offerDate"></div>\
+        </div>\
+        <div class="form-group"><label class="form-label">备注</label><textarea class="form-textarea" id="offerNote"></textarea></div>\
+      </div>\
+      <div class="modal-footer">\
+        <button class="btn btn-outline" onclick="this.closest(\'.modal-overlay\').remove()">取消</button>\
+        <button class="btn btn-primary" onclick="addOffer()">创建Offer</button>\
+      </div>\
+    </div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+}
+
+async function addOffer() {
+  var candidate = document.getElementById('offerCandidate') ? document.getElementById('offerCandidate').value : '';
+  if (!candidate) return;
+  var c = STATE.candidates.find(function(x) { return x['姓名'] === candidate; });
+  var offer = {
+    id: 'o' + Date.now(),
+    '候选人': candidate,
+    '应聘岗位': c ? c['应聘岗位'] : '',
+    '所在部门': (document.getElementById('offerDept') ? document.getElementById('offerDept').value : ''),
+    '薪资元每月': parseInt((document.getElementById('offerSalary') ? document.getElementById('offerSalary').value : 0)) || 0,
+    '预计入职日期': (document.getElementById('offerDate') ? document.getElementById('offerDate').value : ''),
+    Offer状态: '待发放',
+    '背调状态': '未启动',
+    '入职手续': '未开始',
+    '备注': (document.getElementById('offerNote') ? document.getElementById('offerNote').value : '')
+  };
+
+  if (STATE.apiReady) {
+    try {
+      var resp = await API.createRecord(CONFIG.tables.offers.id, offer);
+      if (resp && resp.data && resp.data.record && resp.data.record.record_id) {
+        offer.recordId = resp.data.record.record_id;
+      }
+    } catch(e) { console.error(e); }
+  }
+
+  STATE.offers.unshift(offer);
+  if (c) c['当前阶段'] = 'Offer谈判';
+  var ov = document.querySelector('.modal-overlay');
+  if (ov) ov.remove();
+  refreshCurrentModule();
+  updateBadges();
+}
+
+// Auto-fill Offer department based on selected candidate's position
+function autoFillOfferDept() {
+  var name = document.getElementById('offerCandidate').value;
+  var c = STATE.candidates.find(function(x) { return x['姓名'] === name; });
+  if (!c || !c['应聘岗位']) return;
+  var pos = STATE.positions.find(function(p) { return p['岗位名称'] === c['应聘岗位']; });
+  if (pos && pos['部门']) {
+    var deptSelect = document.getElementById('offerDept');
+    if (deptSelect) deptSelect.value = pos['部门'];
+  }
+}
+
+function showOfferDetail(offerId) {
+  var o = STATE.offers.find(function(x) { return x.id === offerId; });
+  if (!o) return;
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = '\
+    <div class="modal" style="max-width:500px;">\
+      <div class="modal-header">\
+        <h3>Offer详情 — ' + o['候选人'] + '</h3>\
+        <button class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()">&times;</button>\
+      </div>\
+      <div class="modal-body">\
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">\
+          <div><strong>岗位：</strong>' + (o['应聘岗位']||'-') + '</div>\
+          <div><strong>部门：</strong>' + (o['所在部门']||'-') + '</div>\
+          <div><strong>薪资：</strong><span style="color:var(--brand-red);font-weight:700;">¥' + ((o['薪资元每月']||0).toLocaleString()) + '/月</span></div>\
+          <div><strong>入职日期：</strong>' + (o['预计入职日期']||'-') + '</div>\
+        </div>\
+        <div style="margin-top:20px;">\
+          <h4 style="font-size:13px;margin-bottom:12px;">进度追踪</h4>\
+          <div class="timeline">\
+            <div class="timeline-item ' + (o['Offer状态']==='已接受'||o['Offer状态']!=='待发放'?'completed':'active') + '">\
+              <div class="timeline-date">Offer</div>\
+              <div class="timeline-content">' + statusBadge(o['Offer状态']) + '</div>\
+            </div>\
+            <div class="timeline-item ' + (o['背调状态']==='通过'?'completed':o['背调状态']!=='未启动'?'active':'') + '">\
+              <div class="timeline-date">背调</div>\
+              <div class="timeline-content">' + statusBadge(o['背调状态']) + '</div>\
+            </div>\
+            <div class="timeline-item ' + (o['入职手续']==='已完成'?'completed':o['入职手续']!=='未开始'?'active':'') + '">\
+              <div class="timeline-date">入职手续</div>\
+              <div class="timeline-content">' + statusBadge(o['入职手续']) + '</div>\
+            </div>\
+          </div>\
+        </div>\
+      </div>\
+      <div class="modal-footer">\
+        <button class="btn btn-outline" onclick="this.closest(\'.modal-overlay\').remove()">关闭</button>\
+        <button class="btn btn-primary" onclick="updateOfferStatus(\'' + offerId + '\')">更新状态</button>\
+      </div>\
+    </div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+}
+
+function updateOfferStatus(offerId) {
+  var o = STATE.offers.find(function(x) { return x.id === offerId; });
+  if (!o) return;
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = '\
+    <div class="modal" style="max-width:420px;">\
+      <div class="modal-header"><h3>更新Offer状态</h3><button class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()">&times;</button></div>\
+      <div class="modal-body">\
+        <div class="form-group">\
+          <label class="form-label">Offer状态</label>\
+          <select class="form-select" id="uoOfferStatus">\
+            <option ' + (o['Offer状态']==='待发放'?'selected':'') + '>待发放</option>\
+            <option ' + (o['Offer状态']==='已发送'?'selected':'') + '>已发送</option>\
+            <option ' + (o['Offer状态']==='已接受'?'selected':'') + '>已接受</option>\
+            <option ' + (o['Offer状态']==='已拒绝'?'selected':'') + '>已拒绝</option>\
+            <option ' + (o['Offer状态']==='已过期'?'selected':'') + '>已过期</option>\
+          </select>\
+        </div>\
+        <div class="form-group">\
+          <label class="form-label">背调状态</label>\
+          <select class="form-select" id="uoBgStatus">\
+            <option ' + (o['背调状态']==='未启动'?'selected':'') + '>未启动</option>\
+            <option ' + (o['背调状态']==='进行中'?'selected':'') + '>进行中</option>\
+            <option ' + (o['背调状态']==='通过'?'selected':'') + '>通过</option>\
+            <option ' + (o['背调状态']==='未通过'?'selected':'') + '>未通过</option>\
+          </select>\
+        </div>\
+        <div class="form-group">\
+          <label class="form-label">入职手续</label>\
+          <select class="form-select" id="uoOnboardStatus">\
+            <option ' + (o['入职手续']==='未开始'?'selected':'') + '>未开始</option>\
+            <option ' + (o['入职手续']==='材料收集中'?'selected':'') + '>材料收集中</option>\
+            <option ' + (o['入职手续']==='已完成'?'selected':'') + '>已完成</option>\
+          </select>\
+        </div>\
+      </div>\
+      <div class="modal-footer">\
+        <button class="btn btn-outline" onclick="this.closest(\'.modal-overlay\').remove()">取消</button>\
+        <button class="btn btn-primary" onclick="confirmOfferUpdate(\'' + offerId + '\')">保存</button>\
+      </div>\
+    </div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+}
+
+function confirmOfferUpdate(offerId) {
+  var o = STATE.offers.find(function(x) { return x.id === offerId; });
+  if (!o) return;
+  o['Offer状态'] = (document.getElementById('uoOfferStatus') ? document.getElementById('uoOfferStatus').value : '') || o['Offer状态'];
+  o['背调状态'] = (document.getElementById('uoBgStatus') ? document.getElementById('uoBgStatus').value : '') || o['背调状态'];
+  o['入职手续'] = (document.getElementById('uoOnboardStatus') ? document.getElementById('uoOnboardStatus').value : '') || o['入职手续'];
+  document.querySelectorAll('.modal-overlay').forEach(function(el) { el.remove(); });
+  refreshCurrentModule();
+}
+
+// ============== POSITIONS ==============
+function renderPositions(container) {
+  var positions = STATE.positions;
+  container.innerHTML = '\
+    <div class="fade-in">\
+      <div class="card module-fill">\
+        <div class="card-header">\
+          <h3>岗位管理</h3>\
+          <button class="btn btn-primary btn-sm" onclick="showPositionModal()">+ 新增岗位</button>\
+        </div>\
+        <div class="card-body no-padding">\
+          <div class="table-container">\
+            <table>\
+              <thead><tr><th>岗位名称</th><th>部门</th><th>招聘人数</th><th>优先级</th><th>招聘渠道</th><th>状态</th><th>开放日期</th><th>操作</th></tr></thead>\
+              <tbody>' +
+                (positions.length === 0 ? '<tr><td colspan="8" style="text-align:center;color:var(--text-light);padding:40px;">暂无岗位，点击上方按钮新增</td></tr>' :
+                positions.map(function(p) { return '\
+                  <tr>\
+                    <td><strong>' + p['岗位名称'] + '</strong></td>\
+                    <td>' + (p['部门']||'-') + '</td>\
+                    <td>' + (p['招聘人数']||0) + '</td>\
+                    <td><span class="badge ' + ((p['优先级']||'').indexOf('P0')>=0?'badge-red':(p['优先级']||'').indexOf('P1')>=0?'badge-orange':'badge-blue') + '">' + (p['优先级']||'-') + '</span></td>\
+                    <td>' + (p['招聘渠道']||'-') + '</td>\
+                    <td>' + statusBadge(p['岗位状态']) + '</td>\
+                    <td>' + (p['开放日期']||'-') + '</td>\
+                    <td><button class="btn btn-outline btn-sm" onclick="showPositionModal(\'' + (p.id||'') + '\')">编辑</button> <button class="btn btn-sm" style="background:var(--brand-red-light);color:var(--brand-red);border:1px solid var(--brand-red);" onclick="deletePosition(\'' + (p.id||'') + '\')">删除</button></td>\
+                  </tr>'; }).join('')) + '\
+              </tbody>\
+            </table>\
+          </div>\
+        </div>\
+      </div>\
+    </div>';
+}
+
+function showPositionModal(editId) {
+  var isEdit = editId && editId !== '';
+  var p = isEdit ? STATE.positions.find(function(x){return x.id===editId;}) || {} : {};
+  var deptHtml = renderDepartmentOptions(p['部门'] || '');
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = '\
+    <div class="modal">\
+      <div class="modal-header">\
+        <h3>' + (isEdit?'编辑岗位':'新增岗位') + '</h3>\
+        <button class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()">&times;</button>\
+      </div>\
+      <div class="modal-body">\
+        <div class="form-group"><label class="form-label">岗位名称 *</label><input class="form-input" id="posName" value="' + (p['岗位名称']||'') + '" placeholder="例如：房产经纪人"></div>\
+        <div class="form-row">\
+          <div class="form-group"><label class="form-label">所属部门</label><select class="form-select" id="posDept">' + deptHtml + '</select></div>\
+          <div class="form-group"><label class="form-label">招聘人数</label><input class="form-input" type="number" id="posCount" value="' + (p['招聘人数']||1) + '" min="1"></div>\
+        </div>\
+        <div class="form-row">\
+          <div class="form-group"><label class="form-label">优先级</label><select class="form-select" id="posPriority"><option>P0-紧急</option><option>P1-高</option><option>P2-中</option><option>P3-低</option></select></div>\
+          <div class="form-group"><label class="form-label">岗位状态</label><select class="form-select" id="posStatus"><option>招聘中</option><option>面试中</option><option>暂停招聘</option><option>已完成</option><option>待开放</option></select></div>\
+        </div>\
+        <div class="form-group"><label class="form-label">招聘渠道</label><input class="form-input" id="posChannel" value="' + (p['招聘渠道']||'') + '" placeholder="BOSS直聘,内推（逗号分隔）"></div>\
+        <div class="form-group"><label class="form-label">开放日期</label><input class="form-input" type="date" id="posDate" value="' + (p['开放日期']||new Date().toISOString().slice(0,10)) + '"></div>\
+        <div class="form-group"><label class="form-label">岗位职责描述</label><textarea class="form-textarea" id="posDesc" placeholder="描述岗位职责...">' + (p['岗位职责描述']||'') + '</textarea></div>\
+        <div class="form-group"><label class="form-label">JD链接</label><input class="form-input" id="posJD" value="' + (p['JD链接']||'') + '" placeholder="https://..."></div>\
+        <input type="hidden" id="posEditId" value="' + (editId||'') + '">\
+      </div>\
+      <div class="modal-footer">\
+        <button class="btn btn-outline" onclick="this.closest(\'.modal-overlay\').remove()">取消</button>\
+        <button class="btn btn-primary" onclick="submitPosition()">保存</button>\
+      </div>\
+    </div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+  if (p['部门']) document.getElementById('posDept').value = p['部门'];
+  if (p['优先级']) document.getElementById('posPriority').value = p['优先级'];
+  if (p['岗位状态']) document.getElementById('posStatus').value = p['岗位状态'];
+}
+
+async function submitPosition() {
+  var name = document.getElementById('posName').value.trim();
+  if (!name) { alert('请填写岗位名称'); return; }
+  var editId = document.getElementById('posEditId').value;
+  var isEdit = editId && editId !== '';
+  var fields = {
+    '岗位名称': name,
+    '部门': document.getElementById('posDept').value,
+    '招聘人数': parseInt(document.getElementById('posCount').value) || 1,
+    '优先级': document.getElementById('posPriority').value,
+    '招聘渠道': document.getElementById('posChannel').value,
+    '岗位状态': document.getElementById('posStatus').value,
+    'HR负责人': '郭超',
+    '开放日期': document.getElementById('posDate').value,
+    '岗位职责描述': document.getElementById('posDesc').value,
+    'JD链接': document.getElementById('posJD').value
+  };
+
+  if (isEdit) {
+    var idx = STATE.positions.findIndex(function(x){return x.id===editId;});
+    if (idx >= 0) {
+      STATE.positions[idx] = Object.assign({}, STATE.positions[idx], fields, { id: editId });
+      if (STATE.apiReady && STATE.positions[idx].recordId) {
+        try { await API.updateRecord(CONFIG.tables.positions.id, STATE.positions[idx].recordId, fields); } catch(e) { console.error('Update error:', e); }
+      }
+    }
+  } else {
+    var newId = 'p' + Date.now();
+    STATE.positions.push(Object.assign({ id: newId }, fields));
+    if (STATE.apiReady) {
+      try {
+        var resp = await API.createRecord(CONFIG.tables.positions.id, fields);
+        if (resp && resp.data && resp.data.record && resp.data.record.record_id) {
+          var pos = STATE.positions.find(function(x){return x.id===newId;});
+          if (pos) pos.recordId = resp.data.record.record_id;
+        }
+      } catch(e) { console.error('Create error:', e); }
+    }
+  }
+  document.querySelectorAll('.modal-overlay').forEach(function(el) { el.remove(); });
+  refreshCurrentModule();
+}
+
+async function deletePosition(id) {
+  if (!id) { alert('无法删除：岗位数据异常，缺少ID。请刷新页面后重试。'); return; }
+  if (!confirm('确认删除该岗位？')) return;
+  var pos = STATE.positions.find(function(x){return x.id===id;});
+  if (STATE.apiReady && pos && pos.recordId) {
+    try { await API.deleteRecord(CONFIG.tables.positions.id, pos.recordId); } catch(e) { console.error('Delete error:', e); }
+  }
+  STATE.positions = STATE.positions.filter(function(x){return x.id!==id;});
+  refreshCurrentModule();
+}
+
+// ============== SETTINGS ==============
+function renderSettings(container) {
+  var apiStatusHtml = STATE.apiReady
+    ? '<span style="color:#059669;font-weight:600;">&#9679; 代理已连接飞书API — 数据自动同步至多维表格</span>'
+    : '<span style="color:#F59E0B;font-weight:600;">&#9679; 代理未连接飞书API — 请配置凭证后测试连接</span>';
+
+  container.innerHTML = '\
+    <div class="fade-in">\
+      <div class="card">\
+        <div class="card-header"><h3>连接状态</h3></div>\
+        <div class="card-body">\
+          <div style="font-size:14px;margin-bottom:8px;">' + apiStatusHtml + '</div>\
+          <div style="font-size:12px;color:var(--text-secondary);">' +
+            (STATE.apiReady
+              ? '凭证存储在服务端代理，所有增删改操作实时同步至飞书多维表格，刷新不丢数据。'
+              : '凭证将发送到服务端代理（浏览器不存储 Secret），安全连接到飞书多维表格。') + '\
+          </div>\
+        </div>\
+      </div>\
+      <div class="card" style="margin-top:20px;">\
+        <div class="card-header"><h3>API 配置</h3></div>\
+        <div class="card-body">\
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;">\
+            配置飞书应用凭证后，系统将通过服务端代理安全连接到飞书多维表格。App Secret 仅存储在服务器端，浏览器不会泄露。\
+          </p>\
+          <div class="form-group">\
+            <label class="form-label">Base Token</label>\
+            <input class="form-input" id="cfgBaseToken" value="' + CONFIG.baseToken + '" readonly>\
+            <span style="font-size:11px;color:var(--text-light);">房懂懂招聘系统 Base，已自动配置</span>\
+          </div>\
+          <div class="form-group">\
+            <label class="form-label">App ID</label>\
+            <input class="form-input" id="cfgAppId" value="' + CONFIG.appId + '" placeholder="cli_xxxxxxxx">\
+          </div>\
+          <div class="form-group" style="border:2px dashed #E50012; padding:12px; border-radius:8px; background:#FFF5F5;">\
+            <label class="form-label" style="color:#E50012; font-weight:700;">App Secret（在飞书开放平台获取）</label>\
+            <input class="form-input" id="cfgAppSecret" placeholder="在此粘贴 App Secret..." style="border-color:#E50012;">\
+          </div>\
+          <div style="display:flex;gap:8px;">\
+            <button class="btn btn-primary btn-sm" onclick="saveSettings()">保存配置</button>\
+            <button class="btn btn-outline btn-sm" onclick="testApiConnection()">测试连接</button>\
+          </div>\
+          <div id="apiTestResult" style="margin-top:12px;font-size:13px;"></div>\
+        </div>\
+      </div>\
+      <div class="card" style="margin-top:20px;">\
+        <div class="card-header"><h3>数据管理</h3></div>\
+        <div class="card-body">\
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">\
+            当前本地存储：岗位 ' + STATE.positions.length + ' 个 | 候选人 ' + STATE.candidates.length + ' 个 | 面试 ' + STATE.interviews.length + ' 条 | Offer ' + STATE.offers.length + ' 个\
+          </p>\
+          <button class="btn btn-outline btn-sm" onclick="clearLocalData()" style="color:var(--brand-red);border-color:var(--brand-red);">清空本地数据</button>\
+          <span style="font-size:11px;color:var(--text-light);margin-left:8px;">仅清除浏览器缓存，不影响飞书表格数据</span>\
+          <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">\
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">\
+              飞书部门缓存：<span id=\"deptCount\" style=\"font-weight:600;\">' + getDepartmentList().length + '</span> 个部门\
+            </p>\
+            <button class="btn btn-gold btn-sm" onclick="doRefreshDepartments()">🔄 从飞书同步部门</button>\
+            <span id=\"deptRefreshMsg\" style=\"font-size:11px;color:var(--text-secondary);margin-left:8px;\"></span>\
+          </div>\
+        </div>\
+      </div>\
+      <div class="card" style="margin-top:20px;">\
+        <div class="card-header"><h3>一键报销模板库</h3></div>\
+        <div class="card-body">\
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">\
+            已接入一键报销功能，说「报销 XXX」即可自动匹配模板。\
+          </p>\
+          <a href="https://icnh6uysqslc.feishu.cn/base/YUEzbHDRWaC2fxsvA6jccmADnGd" target="_blank" class="btn btn-gold btn-sm">打开报销模板库</a>\
+        </div>\
+      </div>\
+    </div>';
+}
+
+async function saveSettings() {
+  var newAppId = (document.getElementById('cfgAppId') ? document.getElementById('cfgAppId').value : '').trim();
+  var newAppSecret = (document.getElementById('cfgAppSecret') ? document.getElementById('cfgAppSecret').value : '').trim();
+
+  CONFIG.appId = newAppId;
+  CONFIG.appSecret = ''; // 不再存 localStorage
+  localStorage.setItem('fd_app_id', newAppId);
+
+  // 发送凭证到后端代理服务器
+  try {
+    await fetch('/api/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ appId: newAppId, appSecret: newAppSecret })
+    });
+    // 自动验证连接
+    await testApiConnectionSilent();
+  } catch(e) {
+    console.warn('Failed to send credentials:', e.message);
+    alert('配置已保存。请手动点击「测试连接」验证。');
+  }
+}
+
+async function testApiConnectionSilent() {
+  try {
+    var statusResp = await fetch('/api/status');
+    var statusData = await statusResp.json();
+    if (statusData.ready) {
+      STATE.apiReady = true;
+      await loadData();
+      switchModule('dashboard');
+      updateBadges();
+      return;
+    }
+  } catch(e) { console.warn('Silent connect failed:', e.message); }
+  STATE.apiReady = false;
+}
+
+async function testApiConnection() {
+  var el = document.getElementById('apiTestResult');
+  el.innerHTML = '<span style="color:var(--text-secondary);">正在通过代理服务器测试连接...</span>';
+  await saveSettings();
+  // 等待代理服务器处理凭证
+  await new Promise(function(r) { setTimeout(r, 500); });
+  try {
+    // Step 1: 检查代理服务器是否已配置凭证
+    var statusResp = await fetch('/api/status');
+    var status = await statusResp.json();
+    if (!status.ready) {
+      el.innerHTML = '<span style="color:var(--brand-red);">✗ 代理服务器未连接飞书：' + (status.reason || '请填写 App ID 和 App Secret') + '</span>';
+      return;
+    }
+    
+    // Step 2: 通过代理测试 API 调用
+    var res = await API.listRecords(CONFIG.tables.positions.id);
+    if (res.code === 0) {
+      el.innerHTML = '<span style="color:#059669;">✓ 连接成功！代理服务器已就绪，数据自动同步至飞书多维表格</span>';
+      STATE.apiReady = true;
+      refreshCurrentModule();
+      // Also fetch departments on successful connection
+      refreshDepartments().then(function(ok) {
+        if (ok) console.log('Departments synced on test connection');
+        if (document.getElementById('deptCount')) {
+          document.getElementById('deptCount').textContent = getDepartmentList().length;
+        }
+      }).catch(function(){});
+      return;
+    }
+    el.innerHTML = '<span style="color:var(--brand-red);">✗ API返回异常 code=' + res.code + '：' + (res.msg||'未知错误') + '</span>';
+  } catch(e) {
+    el.innerHTML = '<span style="color:var(--brand-red);">✗ 请求失败：' + e.message + '。请确认代理服务器已启动。</span>';
+  }
+}
+
+function clearLocalData() {
+  if (!confirm('确认清空浏览器本地存储的所有数据？\n此操作仅清除缓存，不影响飞书表格数据。')) return;
+  Object.values(LS_KEYS).forEach(function(k) { localStorage.removeItem(k); });
+  STATE.candidates = MOCK_CANDIDATES;
+  STATE.positions = MOCK_POSITIONS;
+  STATE.interviews = MOCK_INTERVIEWS;
+  STATE.offers = MOCK_OFFERS;
+  STATE.apiReady = false;
+  refreshCurrentModule();
+}
+
+async function doRefreshDepartments() {
+  if (!STATE.apiReady) {
+    document.getElementById('deptRefreshMsg').innerHTML = '<span style=\"color:var(--brand-red);\">请先配置飞书 API 凭证并测试连接</span>';
+    return;
+  }
+  document.getElementById('deptRefreshMsg').innerHTML = '<span style=\"color:var(--text-secondary);\">同步中...</span>';
+  var ok = await refreshDepartments();
+  document.getElementById('deptRefreshMsg').innerHTML = ok
+    ? '<span style=\"color:#059669;\">✓ 已同步 ' + STATE.departments.length + ' 个部门</span>'
+    : '<span style=\"color:#F59E0B;\">⚠ 飞书接口调用失败，使用缓存/默认部门列表</span>';
+  document.getElementById('deptCount').textContent = getDepartmentList().length;
+}
+
+// ============== UTILS ==============
+function statusBadge(status) {
+  if (!status) return '<span class="badge badge-gray">—</span>';
+  var map = {
+    '招聘中':'badge-blue','面试中':'badge-gold','待开放':'badge-gray','已暂停':'badge-orange','已关闭':'badge-red',
+    '待筛选':'badge-gray','初试待约':'badge-blue','初试已约':'badge-gold',
+    '复试待约':'badge-orange','复试已约':'badge-red',
+    'Offer谈判':'badge-blue','已录用':'badge-green','已入职':'badge-green','已淘汰':'badge-gray','已放弃':'badge-gray',
+    '强推':'badge-green','推荐':'badge-green','待定':'badge-orange','不推荐':'badge-red','待面试':'badge-blue',
+    '待发放':'badge-gray','已发送':'badge-blue','已接受':'badge-green','已拒绝':'badge-red','已过期':'badge-orange',
+    '未启动':'badge-gray','进行中':'badge-blue','未通过':'badge-red',
+    '未开始':'badge-gray','材料收集中':'badge-orange','已完成':'badge-green'
+  };
+  return '<span class="badge ' + (map[status]||'badge-gray') + '">' + status + '</span>';
+}
+
+function refreshCurrentModule() {
+  saveToLocal();
+  var container = document.getElementById('pageContent');
+  if (container) renderModule(STATE.currentModule, container);
+  updateBadges();
+}
+
+function updateBadges() {
+  var candidatesInPipeline = STATE.candidates.filter(function(c) { return ['已入职','已淘汰','已放弃'].indexOf(c['当前阶段']) === -1; }).length;
+  var pendingOffers = STATE.offers.filter(function(o) { return o['Offer状态'] === '已发送' || o['Offer状态'] === '待发放'; }).length;
+  var candBadge = document.querySelector('.nav-item[data-module="candidates"] .nav-badge');
+  var offerBadge = document.querySelector('.nav-item[data-module="offers"] .nav-badge');
+  if (candBadge) candBadge.textContent = candidatesInPipeline;
+  if (offerBadge) offerBadge.textContent = pendingOffers;
+  var posBadge = document.querySelector('.nav-item[data-module="positions"] .nav-badge');
+  if (posBadge) posBadge.textContent = STATE.positions.length;
+}
+
+// ============== LOCAL STORAGE PERSISTENCE ==============
+var LS_KEYS = { candidates: 'fd_local_candidates', positions: 'fd_local_positions', interviews: 'fd_local_interviews', offers: 'fd_local_offers', apiCfg: 'fd_local_api_configured' };
+
+function saveToLocal() {
+  try {
+    localStorage.setItem(LS_KEYS.candidates, JSON.stringify(STATE.candidates));
+    localStorage.setItem(LS_KEYS.positions, JSON.stringify(STATE.positions));
+    localStorage.setItem(LS_KEYS.interviews, JSON.stringify(STATE.interviews));
+    localStorage.setItem(LS_KEYS.offers, JSON.stringify(STATE.offers));
+    localStorage.setItem(LS_KEYS.apiCfg, (!!CONFIG.appId && !!CONFIG.appSecret) ? '1' : '');
+  } catch(e) { console.warn('localStorage save failed (likely full):', e.message); }
+}
+
+function loadFromLocal() {
+  try {
+    var cand = localStorage.getItem(LS_KEYS.candidates);
+    var pos = localStorage.getItem(LS_KEYS.positions);
+    var iv = localStorage.getItem(LS_KEYS.interviews);
+    var off = localStorage.getItem(LS_KEYS.offers);
+    if (cand) STATE.candidates = JSON.parse(cand);
+    if (pos) STATE.positions = JSON.parse(pos);
+    if (iv) STATE.interviews = JSON.parse(iv);
+    if (off) STATE.offers = JSON.parse(off);
+    return (cand || pos || iv || off);
+  } catch(e) { console.warn('localStorage load failed:', e.message); return false; }
+}
+
+// ============== DEPARTMENT CACHE (sync with Feishu Contacts) ==============
+var DEPT_CACHE_KEY = 'fd_dept_cache';
+var DEPT_CACHE_TIME_KEY = 'fd_dept_cache_time';
+var DEPT_CACHE_TTL = 3600000; // 1 hour
+
+var DEFAULT_DEPARTMENTS = [
+  '直播电商业务部', '买房代表业务部', 'AI智能业务部',
+  '产品技术部', '运营部', '人力资源部', '财务部', '市场部', '行政管理部'
+];
+
+function getDepartmentList() {
+  try {
+    var raw = localStorage.getItem(DEPT_CACHE_KEY);
+    if (raw) {
+      var cached = JSON.parse(raw);
+      if (cached && cached.length > 0) return cached;
+    }
+  } catch(e) {}
+  return DEFAULT_DEPARTMENTS.slice();
+}
+
+function saveDepartmentCache(depts) {
+  if (!depts || !depts.length) return;
+  try {
+    localStorage.setItem(DEPT_CACHE_KEY, JSON.stringify(depts));
+    localStorage.setItem(DEPT_CACHE_TIME_KEY, String(Date.now()));
+  } catch(e) {}
+}
+
+async function refreshDepartments() {
+  if (!STATE.apiReady) {
+    console.log('Cannot refresh departments: API not ready');
+    return false;
+  }
+  try {
+    var depts = await API.fetchDepartments();
+    if (depts && depts.length > 0) {
+      var names = depts.map(function(d) { return d.name; });
+      saveDepartmentCache(names);
+      STATE.departments = names;
+      console.log('Fetched ' + names.length + ' departments from Feishu');
+      return true;
+    }
+  } catch(e) {
+    console.warn('Failed to fetch departments from Feishu:', e.message);
+  }
+  // Fallback: use defaults
+  STATE.departments = DEFAULT_DEPARTMENTS.slice();
+  return false;
+}
+
+function renderDepartmentOptions(selected) {
+  var depts = getDepartmentList();
+  var html = '';
+  for (var i = 0; i < depts.length; i++) {
+    var sel = (depts[i] === selected) ? ' selected' : '';
+    html += '<option' + sel + '>' + depts[i] + '</option>';
+  }
+  // If selected value is not in the list, add it as an extra option (marked)
+  if (selected && depts.indexOf(selected) === -1 && selected !== '') {
+    html = '<option selected>' + selected + '</option>' + html;
+  }
+  return html;
+}
+
+// ============== EVALUATE PAGE LOGIC ==============
+var evalScores = { professional: 0, communication: 0, motivation: 0, potential: 0 };
+
+function initEvalPage() {
+  var hash = window.location.hash.substring(1); // remove '#'
+  var qs = hash.indexOf('?') >= 0 ? hash.substring(hash.indexOf('?') + 1) : '';
+  var params = new URLSearchParams(qs);
+  var candidate = params.get('candidate') || '';
+  var position = params.get('position') || '';
+  var round = params.get('round') || '初试';
+
+  document.getElementById('edCandName').textContent = candidate || '—';
+  document.getElementById('edCandPos').textContent = position || '—';
+  document.getElementById('edCandRound').textContent = round;
+  document.getElementById('edName').value = candidate;
+  document.getElementById('edPosition').value = position;
+  document.getElementById('edRound').value = round;
+
+  var rs = document.getElementById('edRoundSelect');
+  if (rs) { for (var i = 0; i < rs.options.length; i++) { if (rs.options[i].value === round) { rs.selectedIndex = i; break; } } }
+
+  document.getElementById('edDate').value = new Date().toISOString().slice(0, 10);
+
+  // Show resume link if candidate has resume on file
+  var matchedCand = STATE.candidates.find(function(x) { return x['姓名'] === candidate; });
+  var resumeBtn = document.getElementById('edResumeBtn');
+  if (resumeBtn && matchedCand && candidateHasResume(matchedCand)) {
+    resumeBtn.style.display = '';
+    document.getElementById('edResumeLink').onclick = function(e) {
+      e.preventDefault();
+      var c = STATE.candidates.find(function(x) { return x['姓名'] === candidate; });
+      if (c) viewResume(c.id);
+    };
+  }
+
+  // Build star rating
+  document.querySelectorAll('#eval-page .rating-dim').forEach(function(dim) {
+    var dimName = dim.querySelector('.rating-stars').dataset.dim;
+    var starsContainer = dim.querySelector('.rating-stars');
+    var scoreVal = dim.querySelector('.score-val');
+    for (var i = 1; i <= 5; i++) {
+      var star = document.createElement('div');
+      star.className = 'estar';
+      star.textContent = i;
+      (function(idx) {
+        star.addEventListener('click', function() {
+          evalScores[dimName] = idx;
+          scoreVal.textContent = idx + ' / 5';
+          starsContainer.querySelectorAll('.estar').forEach(function(s, si) { s.classList.toggle('active', si < idx); });
+        });
+      })(i);
+      starsContainer.appendChild(star);
+    }
+  });
+}
+
+function submitEvalPage() {
+  var interviewer = document.getElementById('edInterviewer').value.trim();
+  var conclusion = document.getElementById('edConclusion').value;
+  var notes = document.getElementById('edNotes').value.trim();
+  var evalDate = document.getElementById('edDate').value;
+  var evalRound = document.getElementById('edRoundSelect').value;
+  var candidate = document.getElementById('edName').value;
+  var position = document.getElementById('edPosition').value;
+
+  if (!interviewer) { alert('请填写面试官姓名'); document.getElementById('edInterviewer').focus(); return; }
+  if (!conclusion) { alert('请选择综合结论'); return; }
+
+  var totalScore = evalScores.professional + evalScores.communication + evalScores.motivation + evalScores.potential;
+  if (totalScore === 0) {
+    if (!confirm('您尚未进行维度评分，确认跳过评分直接提交？')) return;
+  }
+
+  var avgScore = totalScore > 0 ? (totalScore / 4).toFixed(1) : '—';
+
+  // Build result display
+  var stars = function(n) { var s=''; for(var i=0;i<5;i++) s+= i<n ? '★' : '☆'; return s; };
+  var concColor = conclusion==='强推'?'#059669':conclusion==='推荐'?'#4F46E5':conclusion==='待定'?'#F59E0B':'#E50012';
+
+  document.getElementById('edResultBox').innerHTML =
+    '<div class="result-row"><span class="rlabel">候选人</span><span class="rvalue">' + (candidate||'—') + '</span></div>' +
+    '<div class="result-row"><span class="rlabel">应聘岗位</span><span class="rvalue">' + (position||'—') + '</span></div>' +
+    '<div class="result-row"><span class="rlabel">面试轮次</span><span class="rvalue">' + evalRound + '</span></div>' +
+    '<div class="result-row"><span class="rlabel">面试官</span><span class="rvalue">' + interviewer + '</span></div>' +
+    '<div class="result-row"><span class="rlabel">面试日期</span><span class="rvalue">' + evalDate + '</span></div>' +
+    '<div class="result-row"><span class="rlabel">维度评分</span><span class="rvalue score-stars">专业' + stars(evalScores.professional) + ' 沟通' + stars(evalScores.communication) + ' 动机' + stars(evalScores.motivation) + ' 潜力' + stars(evalScores.potential) + '</span></div>' +
+    '<div class="result-row"><span class="rlabel">综合均分</span><span class="rvalue">' + avgScore + ' / 5</span></div>' +
+    '<div class="result-row"><span class="rlabel">综合结论</span><span class="rvalue" style="color:' + concColor + '">' + conclusion + '</span></div>' +
+    (notes ? '<div class="result-row"><span class="rlabel">评价备注</span><span class="rvalue">' + notes + '</span></div>' : '');
+
+  document.getElementById('evalFormCard').style.display = 'none';
+  document.getElementById('evalSuccessCard').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============== INIT ==============
+async function init() {
+  if (window.location.hash.startsWith('#evaluate')) {
+    document.getElementById('app-shell').style.display = 'none';
+    document.getElementById('eval-page').style.display = 'block';
+    document.body.classList.add('eval-mode');
+    initEvalPage();
+    return;
+  }
+  // Auto-detect server config — skip login if server already has credentials
+  if (!CONFIG.appId) {
+    try {
+      var statusResp = await fetch('/api/status');
+      var statusData = await statusResp.json();
+      if (statusData.ready) {
+        CONFIG.appId = 'cli_aa9415574d389ceb';
+        localStorage.setItem('fd_app_id', CONFIG.appId);
+        console.log('Auto-configured: server already has credentials');
+      }
+    } catch(e) { console.warn('Server status check failed:', e.message); }
+  }
+  setupNavigation();
+  await loadData();
+  switchModule('dashboard');
+  updateBadges();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</div><!-- /app-shell -->
+</body>
+</html>
